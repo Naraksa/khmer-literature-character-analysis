@@ -17,7 +17,7 @@ const collection = {
   curator: "Veasna Naraksa",
 
   // Where does your knowledge come from? A person, a place, a community.
-  source: "Khmer literature teachers",
+  source: "Khmer literature teachers, monks, and students.",
 };
 
 export default collection;

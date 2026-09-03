@@ -1,0 +1,93 @@
+/* ── Classic Literary Theme & Animations ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes bookmarkGlow {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.fade-in-1 {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fade-in-2 {
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  opacity: 0;
+}
+
+.fade-in-3 {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  opacity: 0;
+}
+
+/* Card hover animation */
+.literary-card {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.35s ease;
+}
+
+.literary-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 35px -8px rgba(60, 35, 20, 0.16), 0 6px 12px -3px rgba(60, 35, 20, 0.08) !important;
+  border-color: #C2A684 !important;
+}
+
+.literary-card:hover .card-img {
+  transform: scale(1.05);
+}
+
+.card-img {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.literary-card:hover .read-cta {
+  color: #78350F !important;
+  transform: translateX(4px);
+}
+
+.read-cta {
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+/* Book floating badge */
+.floating-book {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+/* Custom Scrollbar in Sepia/Parchment */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F2EADB;
+}
+::-webkit-scrollbar-thumb {
+  background: #C7B59D;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A69074;
+}
