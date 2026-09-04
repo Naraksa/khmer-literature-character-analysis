@@ -198,6 +198,51 @@ const styles = {
     whiteSpace: "nowrap",
   },
 
+  /* ── Pagination ── */
+  paginationBar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 40,
+    paddingTop: 28,
+    borderTop: "2px solid #E0D4C1",
+  },
+  pageStatus: {
+    fontFamily: "'Inter', sans-serif",
+    fontSize: 12.5,
+    color: "#6E5743",
+    fontWeight: 600,
+    margin: "0 6px",
+  },
+  pageBtn: {
+    fontFamily: "'Inter', sans-serif",
+    fontSize: 13.5,
+    fontWeight: 600,
+    color: "#6B3A19",
+    backgroundColor: "#FDFBF7",
+    border: "1px solid #DFD3BE",
+    borderRadius: 8,
+    padding: "8px 14px",
+    cursor: "pointer",
+    lineHeight: 1,
+    minWidth: 40,
+    transition: "background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease",
+  },
+  pageBtnActive: {
+    color: "#FFFFFF",
+    backgroundColor: "#6B3A19",
+    borderColor: "#6B3A19",
+    cursor: "default",
+  },
+  pageBtnDisabled: {
+    color: "#C7B59D",
+    backgroundColor: "#F5EFE3",
+    borderColor: "#E7DCC8",
+    cursor: "not-allowed",
+  },
+
   /* ── Literary Footer ── */
   footer: {
     borderTop: "2px solid #D8CBB6",
@@ -218,8 +263,11 @@ const styles = {
   },
 };
 
+const PAGE_SIZE = 3;
+
 export default function Home() {
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
 
   const q = query.trim().toLowerCase();
   const filtered = q
@@ -237,6 +285,14 @@ export default function Home() {
       })
     : entries;
 
+  // Pagination is applied AFTER filtering, so the page count reflects the
+  // currently visible (filtered) results. safePage guards against an out-of
+  // -range page when the filter shrinks the result set (e.g. after a search).
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const startIdx = (safePage - 1) * PAGE_SIZE;
+  const pageEntries = filtered.slice(startIdx, startIdx + PAGE_SIZE);
+
   return (
     <div style={styles.main}>
       {/* Literary Hero Banner */}
@@ -244,7 +300,7 @@ export default function Home() {
         <div style={styles.heroInner}>
           <header style={styles.topBar}>
             <div style={styles.brandPill}>
-              <span className="floating-book" style={styles.bookIcon}>📖</span>
+              <span className="floating-book" style={styles.bookIcon}></span>
               <span>Khmer Living Archive</span>
               <span>·</span>
               <span>Literature Monograph</span>
@@ -254,7 +310,6 @@ export default function Home() {
 
           <div style={styles.heroContent}>
             <p style={styles.kicker}>
-              <span>📚</span>
               <span>Literary Character Analysis & Perspectives</span>
             </p>
             <h1 style={styles.title}>{collection.name}</h1>
@@ -264,21 +319,18 @@ export default function Home() {
           <div style={styles.metaGrid}>
             <div style={styles.metaCard}>
               <p style={styles.metaLabel}>
-                <span>✍️</span>
                 <span>Curator</span>
               </p>
               <p style={styles.metaValue}>{collection.curator}</p>
             </div>
             <div style={styles.metaCard}>
               <p style={styles.metaLabel}>
-                <span>🏛️</span>
                 <span>Primary Sources</span>
               </p>
               <p style={styles.metaValue}>{collection.source}</p>
             </div>
             <div style={styles.metaCard}>
               <p style={styles.metaLabel}>
-                <span>📜</span>
                 <span>Collection Scope</span>
               </p>
               <p style={styles.metaValue}>{entries.length} Classical Figures</p>
@@ -291,11 +343,11 @@ export default function Home() {
       <main style={styles.contentSection} className="fade-in-2">
         <div style={styles.sectionBar}>
           <div style={styles.sectionTitleWrap}>
-            <span style={{ fontSize: 20 }}>📚</span>
+            <span style={{ fontSize: 20 }}></span>
             <h2 style={styles.sectionTitle}>Archived Literary Figures & Analyses</h2>
           </div>
           <span style={styles.badge}>
-            {filtered.length} of {entries.length} Figures
+            Showing {pageEntries.length} of {filtered.length} Figures
           </span>
         </div>
 
@@ -305,7 +357,10 @@ export default function Home() {
           <input
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search archived figures…"
             aria-label="Search archived figures"
             style={styles.searchInput}
@@ -314,8 +369,8 @@ export default function Home() {
         </div>
 
         <div style={styles.cardsGrid}>
-          {filtered.map((entry, index) => (
-            <EntryCard key={entry.id} entry={entry} index={index + 1} />
+          {pageEntries.map((entry, index) => (
+            <EntryCard key={entry.id} entry={entry} index={startIdx + index + 1} />
           ))}
         </div>
 
@@ -325,6 +380,61 @@ export default function Home() {
           <p style={{ textAlign: "center", padding: "48px 24px", color: "#8B7355", fontFamily: "'Lora', Georgia, serif", fontSize: 16 }}>
             No matching figures.
           </p>
+        )}
+
+        {/* Pagination — numbered pages + Previous/Next, shown only when
+            more than one page of results exists. */}
+        {totalPages > 1 && (
+          <nav style={styles.paginationBar} aria-label="Archive pagination">
+            <button
+              type="button"
+              onClick={() => setPage(safePage - 1)}
+              disabled={safePage <= 1}
+              aria-label="Go to previous page"
+              style={{
+                ...styles.pageBtn,
+                ...(safePage <= 1 ? styles.pageBtnDisabled : {}),
+              }}
+            >
+              ← Previous
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => {
+              const isActive = num === safePage;
+              return (
+                <button
+                  type="button"
+                  key={num}
+                  onClick={() => setPage(num)}
+                  aria-label={`Go to page ${num}`}
+                  aria-current={isActive ? "page" : undefined}
+                  style={{
+                    ...styles.pageBtn,
+                    ...(isActive ? styles.pageBtnActive : {}),
+                  }}
+                >
+                  {num}
+                </button>
+              );
+            })}
+
+            <button
+              type="button"
+              onClick={() => setPage(safePage + 1)}
+              disabled={safePage >= totalPages}
+              aria-label="Go to next page"
+              style={{
+                ...styles.pageBtn,
+                ...(safePage >= totalPages ? styles.pageBtnDisabled : {}),
+              }}
+            >
+              Next →
+            </button>
+
+            <span style={styles.pageStatus}>
+              Page {safePage} of {totalPages}
+            </span>
+          </nav>
         )}
       </main>
 
