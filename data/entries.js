@@ -93,6 +93,58 @@ const entries = [
       },
     ],
   },
+
+  {
+    id: "Khun-Neary",
+    character: "ឃៃុន​ នារី",
+    role: "តួឯកស្រី",
+    bookTitle: "កុលាប​ប៉ៃលិន (Koulap Pailin)",
+    author: "ញ៉ុក ថែម (Nhok Them)",
+    publishedYear: "1943",
+    image: "/images/khun-neary.jpg",
+    plotSummary: "ឃុន នារី​...",
+    perspectives: [
+      {
+        contributor:"To be updated",
+        place:"To be updated",
+        analysis:"To be updated",
+      }
+    ],
+  },
+  {
+    id: "Chum-Teav-Sren",
+    character: "ជុំទាវស្រែន",
+    role: "តួឯកស្រី",
+    bookTitle: "តេជោយ៉ត (Techo Yot)",
+    author: "ទី​ ជីហួត (Ti Cheu Hout)",
+    publishedYear: "1983",
+    image: "",
+    plotSummary: "ជុំទាវស្រែន​...",
+    perspectives: [
+      {
+        contributor: "To be updated",
+        place: "To be updated",
+        analysis: "To be updated",
+      }
+    ],
+  },
+  {
+    id: "Techo-Yot",
+    character: "តេជោយ៉ត",
+    role: "តួឯកប្រុស",
+    bookTitle: "តេជោយ៉ត (Techo Yot)",
+    author: "ទី​ ជីហួត (Ti Cheu Hout)",
+    publishedYear: "1983",
+    image: "",
+    plotSummary: "តេជោយ៉ត​...",
+    perspectives: [
+      {
+        contributor: "To be updated",
+        place: "To be updated",
+        analysis: "To be updated",
+      }
+    ],
+  },
 ];
 
 export default entries;

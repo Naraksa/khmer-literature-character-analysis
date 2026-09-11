@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LuArrowRight } from "react-icons/lu";
 
 const styles = {
   link: { textDecoration: "none", color: "inherit", display: "block" },
@@ -71,7 +72,9 @@ const styles = {
     backgroundColor: "#F4ECE0",
     padding: "3px 9px",
     borderRadius: 4,
-    border: "1px solid #DFD2BF",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#DFD2BF",
     lineHeight: 1.4,
   },
   bookTitle: { color: "#7B3F00", backgroundColor: "#F7EFE2", borderColor: "#E3CEB4", fontWeight: 600 },
@@ -102,7 +105,9 @@ export default function EntryCard({ entry, index }) {
     <Link href={`/characters/${entry.id}`} style={styles.link}>
       <article style={styles.card} className="literary-card">
         <div style={styles.imageWrap}>
-          <img src={entry.image} alt={entry.character} style={styles.img} className="card-img" />
+          {entry.image ? (
+            <img src={entry.image} alt={entry.character} style={styles.img} className="card-img" />
+          ) : null}
           <div style={styles.imgOverlay} />
           <div style={styles.badgeRow}>
             <span style={styles.nameBadge}>{entry.character}</span>
@@ -118,7 +123,7 @@ export default function EntryCard({ entry, index }) {
           <p style={styles.plot}>{entry.plotSummary}</p>
           <div style={styles.cta}>
             <span> {entry.perspectives?.length || 1} Commentary Record{(entry.perspectives?.length || 1) > 1 ? "s" : ""}</span>
-            <span className="read-cta">Read Analysis →</span>
+            <span className="read-cta" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>Read Analysis <LuArrowRight size={14} /></span>
           </div>
         </div>
       </article>

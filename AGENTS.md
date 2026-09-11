@@ -16,7 +16,7 @@ One student's Khmer Living Archive, built in ICT 340 at AUPP. Every student buil
 
 ## Hard rules
 
-1. Do not add dependencies. The three in `package.json` are the whole list. If a task seems to need a package, stop and say so instead of installing it.
+1. Do not add dependencies without explicit approval. `react-icons` is an approved exception (used for the `lu` Lu icon set across all pages — emojis are never used in the UI). If any other task seems to need a package, stop and say so instead of installing it.
 2. Do not touch `package.json`, `package-lock.json`, `next.config.mjs`, or `.gitignore` unless the task explicitly names them.
 3. Never write an API key, token, or password into any file. This repository is public.
 4. Keep diffs scoped to what was asked. If completing the task honestly requires touching another file, say which file and why before editing it.

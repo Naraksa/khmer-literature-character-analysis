@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LuSearch, LuLibrary, LuArrowLeft, LuArrowRight } from "react-icons/lu";
 import collection from "../collection.config.js";
 import EntryCard from "../components/EntryCard.js";
 import entries from "../data/entries.js";
@@ -222,7 +223,9 @@ const styles = {
     fontWeight: 600,
     color: "#6B3A19",
     backgroundColor: "#FDFBF7",
-    border: "1px solid #DFD3BE",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#DFD3BE",
     borderRadius: 8,
     padding: "8px 14px",
     cursor: "pointer",
@@ -343,7 +346,7 @@ export default function Home() {
       <main style={styles.contentSection} className="fade-in-2">
         <div style={styles.sectionBar}>
           <div style={styles.sectionTitleWrap}>
-            <span style={{ fontSize: 20 }}></span>
+            <span style={{ fontSize: 20, display: "inline-flex", alignItems: "center" }}><LuLibrary /></span>
             <h2 style={styles.sectionTitle}>Archived Literary Figures & Analyses</h2>
           </div>
           <span style={styles.badge}>
@@ -353,7 +356,7 @@ export default function Home() {
 
         {/* Search */}
         <div style={styles.searchWrap}>
-          <span style={styles.searchIcon}>🔍</span>
+          <span style={{ ...styles.searchIcon, display: "inline-flex", alignItems: "center" }}><LuSearch size={18} /></span>
           <input
             type="search"
             value={query}
@@ -396,7 +399,7 @@ export default function Home() {
                 ...(safePage <= 1 ? styles.pageBtnDisabled : {}),
               }}
             >
-              ← Previous
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><LuArrowLeft size={14} /> Previous</span>
             </button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => {
@@ -428,7 +431,7 @@ export default function Home() {
                 ...(safePage >= totalPages ? styles.pageBtnDisabled : {}),
               }}
             >
-              Next →
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>Next <LuArrowRight size={14} /></span>
             </button>
 
             <span style={styles.pageStatus}>
@@ -442,7 +445,7 @@ export default function Home() {
       <footer style={styles.footer}>
         <div style={styles.footerInner}>
           <div>
-            📖 American University of Phnom Penh · ICT 340: Vibe Coding
+             American University of Phnom Penh · ICT 340: Vibe Coding
           </div>
           <div>
             Preserving classical Khmer literature through scholarly and youth perspectives.

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import entries from "../../../data/entries.js";
+import { LuArrowLeft, LuUser } from "react-icons/lu";
 
 export function generateStaticParams() {
   return entries.map((entry) => ({
@@ -232,7 +233,7 @@ export default async function CharacterPage({ params }) {
             The requested character profile could not be found in the archive catalogue.
           </p>
           <Link href="/" style={styles.backLink}>
-            ← Return to Collection Catalog
+            <LuArrowLeft size={14} /> Return to Collection Catalog
           </Link>
         </div>
       </main>
@@ -242,13 +243,15 @@ export default async function CharacterPage({ params }) {
   return (
     <main style={styles.container}>
       <Link href="/" style={styles.backLink}>
-        ← Return to Collection Catalog
+        <LuArrowLeft size={14} /> Return to Collection Catalog
       </Link>
 
       {/* Hero Character Profile */}
       <section style={styles.heroSection}>
         <div style={styles.imageWrap}>
-          <img src={entry.image} alt={entry.character} style={styles.image} />
+          {entry.image ? (
+            <img src={entry.image} alt={entry.character} style={styles.image} />
+          ) : null}
         </div>
 
         <div style={styles.detailsCol}>
@@ -294,8 +297,8 @@ export default async function CharacterPage({ params }) {
           {entry.perspectives?.map((item, idx) => (
             <article key={idx} style={styles.perspectiveCard}>
               <div style={styles.perspectiveHeader}>
-                <div style={styles.contributorName}>
-                  <span>👤</span>
+                <div style={{ ...styles.contributorName, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ display: "inline-flex", alignItems: "center" }}><LuUser size={14} /></span>
                   <span>{item.contributor}</span>
                 </div>
                 <span style={styles.placeBadge}>{item.place}</span>

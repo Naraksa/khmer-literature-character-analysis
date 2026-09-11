@@ -1,5 +1,15 @@
 import Link from "next/link";
 import entries from "../../../data/entries.js";
+import {
+  LuBookOpen,
+  LuArrowLeft,
+  LuTheater,
+  LuPenLine,
+  LuCalendar,
+  LuScroll,
+  LuGraduationCap,
+  LuMapPin,
+} from "react-icons/lu";
 
 export function generateStaticParams() {
   return entries.map((entry) => ({
@@ -227,14 +237,14 @@ export default async function CharacterPage({ params }) {
     return (
       <main style={styles.container}>
         <div style={styles.notFound}>
-          <h1 style={{ color: "#2C1810", fontSize: 30, fontFamily: "'Lora', Georgia, serif" }}>
-            📖 Entry Not Found
+          <h1 style={{ color: "#2C1810", fontSize: 30, fontFamily: "'Lora', Georgia, serif", display: "inline-flex", alignItems: "center", gap: 10, justifyContent: "center" }}>
+            <LuBookOpen size={26} /> Entry Not Found
           </h1>
           <p style={{ color: "#786250", margin: "16px 0 24px" }}>
             The requested character profile could not be found in the archive catalogue.
           </p>
           <Link href="/" style={styles.backLink}>
-            ← Return to Collection Catalog
+            <LuArrowLeft size={14} /> Return to Collection Catalog
           </Link>
         </div>
       </main>
@@ -244,39 +254,41 @@ export default async function CharacterPage({ params }) {
   return (
     <main style={styles.container} className="fade-in-1">
       <Link href="/" style={styles.backLink}>
-        ← Return to Collection Catalog
+        <LuArrowLeft size={14} /> Return to Collection Catalog
       </Link>
 
       {/* Hero Character Profile */}
       <section style={styles.heroSection}>
         <div style={styles.imageWrap}>
-          <img src={entry.image} alt={entry.character} style={styles.image} />
+          {entry.image ? (
+            <img src={entry.image} alt={entry.character} style={styles.image} />
+          ) : null}
         </div>
 
         <div style={styles.detailsCol}>
           <div style={styles.badgeRow}>
-            <span style={styles.roleBadge}>🎭 {entry.role}</span>
+            <span style={{ ...styles.roleBadge, display: "inline-flex", alignItems: "center", gap: 6 }}><LuTheater size={12} /> {entry.role}</span>
           </div>
 
           <h1 style={styles.name}>{entry.character}</h1>
 
           <div style={styles.metaGrid}>
             <div style={styles.metaItem}>
-              <span style={styles.metaLabel}>📖 Literary Work</span>
+              <span style={{ ...styles.metaLabel, display: "inline-flex", alignItems: "center", gap: 6 }}><LuBookOpen size={12} /> Literary Work</span>
               <span style={styles.metaValue}>{entry.bookTitle}</span>
             </div>
             <div style={styles.metaItem}>
-              <span style={styles.metaLabel}>✍️ Author</span>
+              <span style={{ ...styles.metaLabel, display: "inline-flex", alignItems: "center", gap: 6 }}><LuPenLine size={12} /> Author</span>
               <span style={styles.metaValue}>{entry.author}</span>
             </div>
             <div style={styles.metaItem}>
-              <span style={styles.metaLabel}>📅 Published</span>
+              <span style={{ ...styles.metaLabel, display: "inline-flex", alignItems: "center", gap: 6 }}><LuCalendar size={12} /> Published</span>
               <span style={styles.metaValue}>{entry.publishedYear}</span>
             </div>
           </div>
 
           <div style={styles.plotBox}>
-            <div style={styles.plotLabel}>📜 Character Synopsis & Plot Role</div>
+            <div style={{ ...styles.plotLabel, display: "inline-flex", alignItems: "center", gap: 6 }}><LuScroll size={12} /> Character Synopsis & Plot Role</div>
             <p style={styles.plotText}>{entry.plotSummary}</p>
           </div>
         </div>
@@ -285,7 +297,7 @@ export default async function CharacterPage({ params }) {
       {/* Multi-Contributor Perspectives Section */}
       <section className="fade-in-2">
         <h2 style={styles.sectionTitle}>
-          <span>🎓</span>
+          <span style={{ display: "inline-flex", alignItems: "center" }}><LuGraduationCap /></span>
           <span>Documented Analyses & Perspectives</span>
           <span style={styles.countPill}>
             {entry.perspectives?.length || 0} Record
@@ -297,11 +309,11 @@ export default async function CharacterPage({ params }) {
           {entry.perspectives?.map((item, idx) => (
             <article key={idx} style={styles.perspectiveCard} className="literary-card">
               <div style={styles.perspectiveHeader}>
-                <div style={styles.contributorName}>
-                  <span>✍️</span>
+                <div style={{ ...styles.contributorName, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ display: "inline-flex", alignItems: "center" }}><LuPenLine size={14} /></span>
                   <span>{item.contributor}</span>
                 </div>
-                <span style={styles.placeBadge}>📍 {item.place}</span>
+                <span style={{ ...styles.placeBadge, display: "inline-flex", alignItems: "center", gap: 6 }}><LuMapPin size={12} /> {item.place}</span>
               </div>
               <p style={styles.perspectiveText}>"{item.analysis}"</p>
             </article>
