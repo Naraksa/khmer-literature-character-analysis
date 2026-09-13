@@ -102,12 +102,12 @@ const entries = [
     author: "ញ៉ុក ថែម (Nhok Them)",
     publishedYear: "1943",
     image: "/images/khun-neary.jpg",
-    plotSummary: "ឃុន នារី​...",
+    plotSummary: "ឃុន នារី​ជាកូនស្រីរបស់លោកហ្លួងរតនៈសម្បត្តិ​ដែលមានរូបស្រស់សោភា។ ដើមឡើយនាងមានអាកប្បកិរិយារើសអើងលើចៅចិត្ត​ ប៉ុន្តែបន្ទាប់​ពីស្គាល់គ្នាយូរ ហើយដោយចៅចិត្រហ៊ានលះបង់​ជិវិតរបស់ខ្លួនដើម្បីជួយគ្រួសាររបស់នាង​ ឃុន​​ នារីក័បានបាក់ចិត្តស្រឡាញ់ចៅចិត្រ។",
     perspectives: [
       {
-        contributor:"To be updated",
-        place:"To be updated",
-        analysis:"To be updated",
+        contributor:"Noeumsophy Reaksmey",
+        place:"Online Discussion",
+        analysis:"Khun Neary is a character that may be criticized by some readers for her initial arrogance and prejudice toward Chao Chet. However, she is also a character that shows growth and change. She learns to appreciate Chao Chet's selflessness and bravery, which leads her to fall in love with him. Her character demonstrates the importance of humility and the ability to change one's perspective.",
       }
     ],
   },
@@ -119,12 +119,12 @@ const entries = [
     author: "ទី​ ជីហួត (Ti Cheu Hout)",
     publishedYear: "1983",
     image: "",
-    plotSummary: "ជុំទាវស្រែន​...",
+    plotSummary: "ជុំទាវស្រែន​ជានារីដែលមានរូបសម្បត្តិល្អ និងមានភាពវៃឆ្លាតអាចយកឈ្នះស្តេចសម្រែសងសឹកឱ្យស្វាមីរបស់ខ្លួន តែត្រូវចាញ់​ប្រាជ្ញារបស់តេជោយ៉ត ហើយត្រូវរៀបការជាមួយតេជោយ៉​តដែលជាសិស្សរបស់អតីតស្វាមីរបស់ខ្លួន តេជោមាសដែលបានស្លាប់​ក្នុងសង្គ្រាមជាមួយស្តេចសម្រែ។",
     perspectives: [
       {
-        contributor: "To be updated",
-        place: "To be updated",
-        analysis: "To be updated",
+        contributor: "Noeumsophy Reaksmey",
+        place: "Online Discussion",
+        analysis: "Chum Teav Sren is a character that may inspire a lot of readers, especially female readers. She is a clever and beautiful woman who sought revenge for her late husband Techo Meas by herself. Her strategic thinking is amamzing as she is able to kill Sdach Somrea by herself alone without any physical strength. However, she is also a character that is very unlucky as she is forced to marry Techo Yot, who is her late husband's student.",
       }
     ],
   },
@@ -136,12 +136,12 @@ const entries = [
     author: "ទី​ ជីហួត (Ti Cheu Hout)",
     publishedYear: "1983",
     image: "",
-    plotSummary: "តេជោយ៉ត​...",
+    plotSummary: "តេជោយ៉ត​ជាកូនសិស្សរបស់តេជោមាស​ ដែលមានភាពវៃឆ្លាតអាចយកឈ្នះចិត្តរបស់ជំទាវស្រែនដែលត្រូវជាប្រពន្ធរបស់​តេជោមាសដែលត្រូវជាគ្រូរបស់ខ្លួន។​",
     perspectives: [
       {
-        contributor: "To be updated",
-        place: "To be updated",
-        analysis: "To be updated",
+        contributor: "Noeumsophy Reaksmey",
+        place: "Online Discussion",
+        analysis: "Techo Yot is a character that might have been criticized a lot by readers and all khmer literature learners for his act of trying to seduce his teacher's wife. However, he is a character that is very clever and smart. He is able to win the heart of Chum Teav Sren, who is the wife of his teacher Techo Meas, by using his intelligence and wit.",
       }
     ],
   },
