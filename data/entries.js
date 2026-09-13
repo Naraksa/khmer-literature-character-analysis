@@ -96,7 +96,7 @@ const entries = [
 
   {
     id: "Khun-Neary",
-    character: "ឃៃុន​ នារី",
+    character: "ឃុន​ នារី",
     role: "តួឯកស្រី",
     bookTitle: "កុលាប​ប៉ៃលិន (Koulap Pailin)",
     author: "ញ៉ុក ថែម (Nhok Them)",
