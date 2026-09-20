@@ -1,5 +1,6 @@
 import "./globals.css";
 import collection from "../collection.config.js";
+import AuthNav from "../components/AuthNav.js";
 
 export const metadata = {
   title: `${collection.name} — Khmer Living Archive`,
@@ -32,6 +33,24 @@ export default function RootLayout({ children }) {
           MozOsxFontSmoothing: "grayscale",
         }}
       >
+        <div
+          style={{
+            width: "100%",
+            backgroundColor: "#EFE8DA",
+            borderBottom: "2px solid #D8CBB6",
+            padding: "10px 24px",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: 1240,
+              margin: "0 auto",
+            }}
+          >
+            <AuthNav />
+          </div>
+        </div>
         {children}
       </body>
     </html>
