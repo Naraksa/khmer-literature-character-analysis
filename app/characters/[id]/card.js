@@ -1,20 +1,23 @@
 import Link from "next/link";
-import entries from "../../../data/entries.js";
 import { LuArrowLeft, LuUser } from "react-icons/lu";
+import { createClient } from "../../../lib/supabase/server.js";
 
-export function generateStaticParams() {
-  return entries.map((entry) => ({
-    id: entry.id,
-  }));
-}
+// Detail pages are fully dynamic: entries live in Supabase and are keyed by a
+// generated uuid, so there is no fixed set of params to pre-render.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
-  const entry = entries.find((e) => e.id === id);
+  const supabase = await createClient();
+  const { data: entry } = await supabase
+    .from("entries")
+    .select("character, book_title, plot_summary")
+    .eq("id", id)
+    .maybeSingle();
   if (!entry) return { title: "Entry Not Found — Khmer Living Archive" };
   return {
-    title: `${entry.character} (${entry.bookTitle}) — Khmer Literature Analysis`,
-    description: entry.plotSummary,
+    title: `${entry.character} (${entry.book_title}) — Khmer Literature Analysis`,
+    description: entry.plot_summary,
   };
 }
 
@@ -220,7 +223,14 @@ const styles = {
 
 export default async function CharacterPage({ params }) {
   const { id } = await params;
-  const entry = entries.find((e) => e.id === id);
+  const supabase = await createClient();
+  const { data: entry } = await supabase
+    .from("entries")
+    .select(
+      "id, character, role, book_title, author, published_year, image, plot_summary, perspectives"
+    )
+    .eq("id", id)
+    .maybeSingle();
 
   if (!entry) {
     return (
@@ -264,7 +274,7 @@ export default async function CharacterPage({ params }) {
           <div style={styles.metaGrid}>
             <div style={styles.metaItem}>
               <span style={styles.metaLabel}>Literary Work</span>
-              <span style={styles.metaValue}>{entry.bookTitle}</span>
+              <span style={styles.metaValue}>{entry.book_title}</span>
             </div>
             <div style={styles.metaItem}>
               <span style={styles.metaLabel}>Author</span>
@@ -272,13 +282,13 @@ export default async function CharacterPage({ params }) {
             </div>
             <div style={styles.metaItem}>
               <span style={styles.metaLabel}>Published</span>
-              <span style={styles.metaValue}>{entry.publishedYear}</span>
+              <span style={styles.metaValue}>{entry.published_year}</span>
             </div>
           </div>
 
           <div style={styles.plotBox}>
             <div style={styles.plotLabel}>Character Synopsis & Plot Role</div>
-            <p style={styles.plotText}>{entry.plotSummary}</p>
+            <p style={styles.plotText}>{entry.plot_summary}</p>
           </div>
         </div>
       </section>

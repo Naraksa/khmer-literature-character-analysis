@@ -116,11 +116,11 @@ export default function EntryCard({ entry, index }) {
         </div>
         <div style={styles.content}>
           <div style={styles.metaChips}>
-            <span style={{ ...styles.chip, ...styles.bookTitle }}>{entry.bookTitle}</span>
+            <span style={{ ...styles.chip, ...styles.bookTitle }}>{entry.book_title}</span>
             <span style={styles.chip}> {entry.author}</span>
-            <span style={{ ...styles.chip, ...styles.yearChip }}>{entry.publishedYear}</span>
+            <span style={{ ...styles.chip, ...styles.yearChip }}>{entry.published_year}</span>
           </div>
-          <p style={styles.plot}>{entry.plotSummary}</p>
+          <p style={styles.plot}>{entry.plot_summary}</p>
           <div style={styles.cta}>
             <span> {entry.perspectives?.length || 1} Commentary Record{(entry.perspectives?.length || 1) > 1 ? "s" : ""}</span>
             <span className="read-cta" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>Read Analysis <LuArrowRight size={14} /></span>

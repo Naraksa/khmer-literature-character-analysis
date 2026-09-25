@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LuSearch, LuLibrary, LuArrowLeft, LuArrowRight } from "react-icons/lu";
 import collection from "../collection.config.js";
 import EntryCard from "../components/EntryCard.js";
-import entries from "../data/entries.js";
+import { createClient } from "../lib/supabase/client.js";
 
 const styles = {
   main: {
@@ -169,6 +169,38 @@ const styles = {
     gap: 28,
   },
 
+  /* ── Loading + empty states ── */
+  emptyState: {
+    textAlign: "center",
+    padding: "48px 24px",
+    color: "#8B7355",
+    fontFamily: "'Lora', Georgia, serif",
+    fontSize: 16,
+  },
+  placeholderCard: {
+    backgroundColor: "#FDFBF7",
+    border: "1px solid #DFD3BE",
+    borderRadius: 12,
+    overflow: "hidden",
+    boxShadow: "0 4px 14px rgba(60, 35, 20, 0.06)",
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    minHeight: 360,
+  },
+  placeholderImage: {
+    width: "100%",
+    height: 220,
+    backgroundColor: "#EAE0D0",
+  },
+  placeholderContent: {
+    padding: "18px 20px 20px",
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+    flex: 1,
+  },
+
   /* ── Search ── */
   searchWrap: {
     display: "flex",
@@ -272,14 +304,42 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
 
+  // Entries now come from Supabase (newest first), not the local data file.
+  const [entries, setEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    const supabase = createClient();
+    supabase
+      .from("entries")
+      .select(
+        "id, created_at, owner, slug, character, role, book_title, author, published_year, image, plot_summary, perspectives"
+      )
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (!active) return;
+        if (error) {
+          setEntries([]);
+        } else {
+          setEntries(data ?? []);
+        }
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const q = query.trim().toLowerCase();
   const filtered = q
     ? entries.filter((entry) => {
         const haystack = [
           entry.character,
-          entry.bookTitle,
+          entry.book_title,
           entry.author,
-          entry.plotSummary,
+          entry.plot_summary,
         ]
           .filter(Boolean)
           .join(" ")
@@ -371,18 +431,36 @@ export default function Home() {
           {q && <span style={styles.searchHint}>{filtered.length} match{filtered.length === 1 ? "" : "es"}</span>}
         </div>
 
-        <div style={styles.cardsGrid}>
-          {pageEntries.map((entry, index) => (
-            <EntryCard key={entry.id} entry={entry} index={startIdx + index + 1} />
-          ))}
-        </div>
+        {loading ? (
+          /* Loading skeleton — keeps the grid layout stable while entries
+             are being fetched from Supabase. */
+          <div style={styles.cardsGrid} aria-busy="true" aria-live="polite">
+            {[0, 1, 2].map((i) => (
+              <div key={i} style={styles.placeholderCard} aria-hidden="true">
+                <div style={styles.placeholderImage} />
+                <div style={styles.placeholderContent}>
+                  <p style={{ ...styles.plot, color: "#8B7355" }}>
+                    Loading archived figures…
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : entries.length === 0 ? (
+          <p style={styles.emptyState}>No archived figures yet.</p>
+        ) : (
+          <>
+            <div style={styles.cardsGrid}>
+              {pageEntries.map((entry, index) => (
+                <EntryCard key={entry.id} entry={entry} index={startIdx + index + 1} />
+              ))}
+            </div>
 
-        {/* TODO: Write the no-results empty-state copy here.
-            This is a placeholder for the student to author. */}
-        {filtered.length === 0 && (
-          <p style={{ textAlign: "center", padding: "48px 24px", color: "#8B7355", fontFamily: "'Lora', Georgia, serif", fontSize: 16 }}>
-            No matching figures.
-          </p>
+            {/* No-results empty state for a search that matches nothing. */}
+            {filtered.length === 0 && (
+              <p style={styles.emptyState}>No matching figures.</p>
+            )}
+          </>
         )}
 
         {/* Pagination — numbered pages + Previous/Next, shown only when
