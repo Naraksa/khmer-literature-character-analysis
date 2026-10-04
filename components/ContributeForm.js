@@ -8,6 +8,7 @@ import styles from "./contributeFormStyles.js";
 import { createClient } from "../lib/supabase/client.js";
 import { ALLOWED_ROLES, validateField, validateAll } from "../lib/contributeValidation.js";
 import { submitEntry } from "../lib/contributeSubmit.js";
+import { updateEntry } from "../lib/contributeUpdate.js";
 
 const supabase = createClient();
 
@@ -23,9 +24,16 @@ const FIELDS = [
   { name: "plot_summary", label: "Plot summary (optional)", type: "area" },
 ];
 
-export default function ContributeForm({ user }) {
+const EMPTY = { slug: "", character: "", role: "", book_title: "", author: "", published_year: "", plot_summary: "" };
+
+export default function ContributeForm({ user, entry }) {
   const router = useRouter();
-  const [values, setValues] = useState({ slug: "", character: "", role: "", book_title: "", author: "", published_year: "", plot_summary: "" });
+  const editing = Boolean(entry);
+  const [values, setValues] = useState(() => {
+    if (!entry) return EMPTY;
+    const { id, image, ...rest } = entry;
+    return { ...EMPTY, ...rest };
+  });
   const [errors, setErrors] = useState({});
   const [photo, setPhoto] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -42,15 +50,19 @@ export default function ContributeForm({ user }) {
     setFormError(null);
     const allErrors = validateAll(values);
     if (Object.keys(allErrors).length > 0) { setErrors(allErrors); return; }
+    // Create requires a photo; edit does not (keep the existing image).
+    if (!editing && !photo) { setFormError("Please choose a photo to upload."); return; }
     setBusy(true);
-    const result = await submitEntry({ supabase, user, values, photo, router });
+    const result = editing
+      ? await updateEntry({ supabase, user, entryId: entry.id, values, photo, existingImage: entry.image, router })
+      : await submitEntry({ supabase, user, values, photo, router });
     if (result.error) { setFormError(result.error); setBusy(false); }
   }
 
   return (
     <div style={styles.card}>
       <p style={styles.kicker}>Khmer Living Archive</p>
-      <h1 style={styles.title}>Contribute an entry</h1>
+      <h1 style={styles.title}>{editing ? "Edit entry" : "Contribute an entry"}</h1>
       {formError && <p style={styles.error} role="alert">{formError}</p>}
       <form onSubmit={onSubmit} noValidate>
         {FIELDS.map((f) => (
@@ -74,14 +86,16 @@ export default function ContributeForm({ user }) {
             {ALLOWED_ROLES.map((r) => (<option key={r} value={r}>{r}</option>))}
           </select>
         </ContributeField>
-        <ContributeField id="photo" label="Photo (required)" error={null}>
+        <ContributeField id="photo" label={editing ? "Photo (optional)" : "Photo (required)"} error={null}>
           <input id="photo" type="file" accept="image/*" style={styles.input}
             onChange={(e) => setPhoto(e.target.files[0] ?? null)} />
-          <p style={styles.fileHint}>JPEG, PNG, WebP, or GIF. 5 MB max.</p>
+          <p style={styles.fileHint}>
+            {editing ? "Leave empty to keep the current photo. " : ""}JPEG, PNG, WebP, or GIF. 5 MB max.
+          </p>
         </ContributeField>
         <button type="submit" disabled={busy}
           style={{ ...styles.submit, ...(busy ? styles.submitDisabled : {}) }}>
-          <LuUpload size={15} /> {busy ? "Saving…" : "Publish entry"}
+          <LuUpload size={15} /> {busy ? "Saving…" : editing ? "Save changes" : "Publish entry"}
         </button>
       </form>
     </div>

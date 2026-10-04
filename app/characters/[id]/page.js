@@ -10,6 +10,7 @@ import {
   LuMapPin,
 } from "react-icons/lu";
 import { createClient } from "../../../lib/supabase/server.js";
+import EntryActions from "../../../components/EntryActions.js";
 
 // Detail pages are fully dynamic: entries live in Supabase and are keyed by a
 // generated uuid, so there is no fixed set of params to pre-render.
@@ -238,10 +239,16 @@ export default async function CharacterPage({ params }) {
   const { data: entry } = await supabase
     .from("entries")
     .select(
-      "id, character, role, book_title, author, published_year, image, plot_summary, perspectives"
+      "id, owner, slug, character, role, book_title, author, published_year, image, plot_summary, perspectives"
     )
     .eq("id", id)
     .maybeSingle();
+
+  // Fetch the current user so we can show Edit/Delete only to the owner.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isOwner = Boolean(user && entry && user.id === entry.owner);
 
   if (!entry) {
     return (
@@ -300,6 +307,10 @@ export default async function CharacterPage({ params }) {
           <div style={styles.plotBox}>
             <div style={{ ...styles.plotLabel, display: "inline-flex", alignItems: "center", gap: 6 }}><LuScroll size={12} /> Character Synopsis & Plot Role</div>
             <p style={styles.plotText}>{entry.plot_summary}</p>
+
+          {isOwner && (
+            <EntryActions entryId={entry.id} entryCharacter={entry.character} />
+          )}
           </div>
         </div>
       </section>
