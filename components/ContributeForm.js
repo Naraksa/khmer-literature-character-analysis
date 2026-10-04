@@ -1,0 +1,89 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { LuUpload } from "react-icons/lu";
+import ContributeField from "./ContributeField.js";
+import styles from "./contributeFormStyles.js";
+import { createClient } from "../lib/supabase/client.js";
+import { ALLOWED_ROLES, validateField, validateAll } from "../lib/contributeValidation.js";
+import { submitEntry } from "../lib/contributeSubmit.js";
+
+const supabase = createClient();
+
+// Field config drives the rendered text inputs so the JSX stays compact.
+// type "text" uses <input>; type "area" uses <textarea>; inputMode is set
+// only where it helps mobile keyboards.
+const FIELDS = [
+  { name: "slug", label: "Slug", type: "text", placeholder: "e.g. tum-teav-1952" },
+  { name: "character", label: "Character", type: "text" },
+  { name: "book_title", label: "Book title", type: "text" },
+  { name: "author", label: "Author", type: "text" },
+  { name: "published_year", label: "Published year (optional)", type: "text", inputMode: "numeric", placeholder: "e.g. 1952" },
+  { name: "plot_summary", label: "Plot summary (optional)", type: "area" },
+];
+
+export default function ContributeForm({ user }) {
+  const router = useRouter();
+  const [values, setValues] = useState({ slug: "", character: "", role: "", book_title: "", author: "", published_year: "", plot_summary: "" });
+  const [errors, setErrors] = useState({});
+  const [photo, setPhoto] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [formError, setFormError] = useState(null);
+
+  function update(name, value) {
+    setValues((v) => ({ ...v, [name]: value }));
+    setErrors((e) => (e[name] ? { ...e, [name]: undefined } : e));
+  }
+  const onBlur = (name) => setErrors((e) => ({ ...e, [name]: validateField(name, values[name]) ?? undefined }));
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    setFormError(null);
+    const allErrors = validateAll(values);
+    if (Object.keys(allErrors).length > 0) { setErrors(allErrors); return; }
+    setBusy(true);
+    const result = await submitEntry({ supabase, user, values, photo, router });
+    if (result.error) { setFormError(result.error); setBusy(false); }
+  }
+
+  return (
+    <div style={styles.card}>
+      <p style={styles.kicker}>Khmer Living Archive</p>
+      <h1 style={styles.title}>Contribute an entry</h1>
+      {formError && <p style={styles.error} role="alert">{formError}</p>}
+      <form onSubmit={onSubmit} noValidate>
+        {FIELDS.map((f) => (
+          <ContributeField key={f.name} id={f.name} label={f.label} error={errors[f.name]}>
+            {f.type === "area" ? (
+              <textarea id={f.name} value={values[f.name]} style={styles.textarea}
+                onChange={(e) => update(f.name, e.target.value)}
+                onBlur={() => onBlur(f.name)} />
+            ) : (
+              <input id={f.name} type={f.type} value={values[f.name]} style={styles.input}
+                inputMode={f.inputMode} placeholder={f.placeholder} autoComplete="off"
+                onChange={(e) => update(f.name, e.target.value)}
+                onBlur={() => onBlur(f.name)} />
+            )}
+          </ContributeField>
+        ))}
+        <ContributeField id="role" label="Role (optional)" error={errors.role}>
+          <select id="role" value={values.role} style={styles.input}
+            onChange={(e) => update("role", e.target.value)} onBlur={() => onBlur("role")}>
+            <option value="">-- Select a role --</option>
+            {ALLOWED_ROLES.map((r) => (<option key={r} value={r}>{r}</option>))}
+          </select>
+        </ContributeField>
+        <ContributeField id="photo" label="Photo (required)" error={null}>
+          <input id="photo" type="file" accept="image/*" style={styles.input}
+            onChange={(e) => setPhoto(e.target.files[0] ?? null)} />
+          <p style={styles.fileHint}>JPEG, PNG, WebP, or GIF. 5 MB max.</p>
+        </ContributeField>
+        <button type="submit" disabled={busy}
+          style={{ ...styles.submit, ...(busy ? styles.submitDisabled : {}) }}>
+          <LuUpload size={15} /> {busy ? "Saving…" : "Publish entry"}
+        </button>
+      </form>
+    </div>
+  );
+}
