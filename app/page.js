@@ -317,6 +317,7 @@ export default function Home() {
       .select(
         "id, created_at, owner, slug, character, role, book_title, author, published_year, image, plot_summary, perspectives"
       )
+      .eq("status", "published")
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
         if (!active) return;
