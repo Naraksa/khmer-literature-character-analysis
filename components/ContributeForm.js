@@ -66,9 +66,9 @@ export default function ContributeForm({ user, entry }) {
     return (
       <div style={styles.card}>
         <p style={styles.kicker}>Khmer Living Archive</p>
-        <h1 style={styles.thanksTitle}>សូមអរគុណ!</h1>
+        <h1 style={styles.thanksTitle}>Thank you!</h1>
         <p style={styles.thanksMessage}>
-          សូមអរគុណ! ទិន្នន័យរបស់អ្នកត្រូវបានបញ្ជូន ហើយកំពុងរង់ចាំការត្រួតពិនិត្យ មុនពេលបង្ហាញជាសាធារណៈ។
+          Thank you! Your entry has been submitted and is waiting for reviewer approval before appearing in the public archive. You can check its status anytime on your My Entries page. / សូមអរគុណ! ទិន្នន័យរបស់អ្នកត្រូវបានបញ្ជូន ហើយកំពុងរង់ចាំការត្រួតពិនិត្យ មុនពេលបង្ហាញជាសាធារណៈ។
         </p>
         <div style={styles.thanksActions}>
           <Link href="/my-entries" style={styles.thanksLink}>View my entries</Link>
