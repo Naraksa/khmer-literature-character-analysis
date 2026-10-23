@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { LuUpload } from "react-icons/lu";
 import ContributeField from "./ContributeField.js";
 import styles from "./contributeFormStyles.js";
@@ -38,6 +39,7 @@ export default function ContributeForm({ user, entry }) {
   const [photo, setPhoto] = useState(null);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
 
   function update(name, value) {
     setValues((v) => ({ ...v, [name]: value }));
@@ -55,8 +57,25 @@ export default function ContributeForm({ user, entry }) {
     setBusy(true);
     const result = editing
       ? await updateEntry({ supabase, user, entryId: entry.id, values, photo, existingImage: entry.image, router })
-      : await submitEntry({ supabase, user, values, photo, router });
+      : await submitEntry({ supabase, user, values, photo });
     if (result.error) { setFormError(result.error); setBusy(false); }
+    else if (!editing) { setSubmitted(true); }
+  }
+
+  if (!editing && submitted) {
+    return (
+      <div style={styles.card}>
+        <p style={styles.kicker}>Khmer Living Archive</p>
+        <h1 style={styles.thanksTitle}>សូមអរគុណ!</h1>
+        <p style={styles.thanksMessage}>
+          សូមអរគុណ! ទិន្នន័យរបស់អ្នកត្រូវបានបញ្ជូន ហើយកំពុងរង់ចាំការត្រួតពិនិត្យ មុនពេលបង្ហាញជាសាធារណៈ។
+        </p>
+        <div style={styles.thanksActions}>
+          <Link href="/my-entries" style={styles.thanksLink}>View my entries</Link>
+          <Link href="/" style={styles.thanksLinkSecondary}>Back to archive</Link>
+        </div>
+      </div>
+    );
   }
 
   return (

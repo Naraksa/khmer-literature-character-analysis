@@ -42,6 +42,9 @@ export default async function AuthNav() {
         <Link href="/contribute" style={styles.link}>
           Contribute
         </Link>
+        <Link href="/my-entries" style={styles.link}>
+          My entries
+        </Link>
         <LogoutButton />
       </nav>
     );
