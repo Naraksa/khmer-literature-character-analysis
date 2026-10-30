@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { LuArrowLeft, LuTheater, LuClock } from "react-icons/lu";
+import { LuArrowLeft } from "react-icons/lu";
 import { createClient } from "../../lib/supabase/server.js";
+import ReviewQueue from "../../components/ReviewQueue.js";
 
 // This route is the reviewer's queue. Access is gated on the server by the
 // database function is_reviewer(), which returns true only when the signed-in
@@ -78,84 +79,6 @@ const styles = {
     margin: "0 0 36px",
     lineHeight: 1.6,
   },
-  list: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 16,
-  },
-  entryCard: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 10,
-    backgroundColor: "#FDFBF7",
-    border: "1px solid #DFD3BE",
-    borderRadius: 12,
-    padding: "18px 20px",
-    boxShadow: "0 4px 14px rgba(60, 35, 20, 0.06)",
-  },
-  entryTitleRow: {
-    display: "flex",
-    alignItems: "baseline",
-    gap: 10,
-    flexWrap: "wrap",
-  },
-  entryCharacter: {
-    fontSize: 20,
-    fontWeight: 700,
-    color: "#2C1810",
-    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
-    margin: 0,
-  },
-  entryBook: {
-    fontSize: 14,
-    color: "#7B3F00",
-    fontFamily: "'Lora', Georgia, serif",
-  },
-  entryBadge: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    alignSelf: "flex-start",
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 11.5,
-    fontWeight: 700,
-    color: "#7B3F00",
-    backgroundColor: "#F7EFE2",
-    border: "1px solid #E5D3BC",
-    padding: "3px 12px",
-    borderRadius: 6,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-  },
-  entrySummary: {
-    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
-    fontSize: 14.5,
-    color: "#3D2B1D",
-    lineHeight: 1.75,
-    margin: 0,
-    // Clamp long summaries so a card never dominates the queue. No new
-    // dependency — this is a plain inline style.
-    display: "-webkit-box",
-    WebkitLineClamp: 3,
-    WebkitBoxOrient: "vertical",
-    overflow: "hidden",
-  },
-  entryMeta: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 12.5,
-    color: "#6E5743",
-    marginTop: "auto",
-  },
-  emptyState: {
-    textAlign: "center",
-    padding: "64px 24px",
-    color: "#8B7355",
-    fontFamily: "'Lora', Georgia, serif",
-    fontSize: 16,
-  },
 };
 
 export default async function ReviewPage() {
@@ -212,20 +135,10 @@ export default async function ReviewPage() {
     console.error("Pending entries fetch threw:", err);
   }
 
-  // Intl.DateTimeFormat is built into the runtime — no new package. Supabase
-  // returns created_at as an ISO string; we render a readable date + time.
-  const formatDate = (iso) => {
-    if (!iso) return "";
-    try {
-      return new Intl.DateTimeFormat("en-GB", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(new Date(iso));
-    } catch {
-      return iso;
-    }
-  };
-
+  // Intl formatting and the publish/return actions live in the client
+  // ReviewQueue component (it owns the list state so a successful decision can
+  // remove the entry from the client list). We only pass the server-fetched
+  // pending entries down.
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <main style={styles.formWrap} className="fade-in-1">
@@ -237,38 +150,7 @@ export default async function ReviewPage() {
           Entries awaiting review, oldest first.
         </p>
 
-        {entries.length === 0 ? (
-          <div style={styles.emptyState}>
-            គ្មានធាតុដែលត្រូវត្រួតពិនិត្យទេ / No pending entries to review.
-          </div>
-        ) : (
-          <div style={styles.list}>
-            {entries.map((entry) => (
-              <article key={entry.id} style={styles.entryCard} className="literary-card">
-                <div style={styles.entryTitleRow}>
-                  <h2 style={styles.entryCharacter}>{entry.character}</h2>
-                  {entry.book_title && (
-                    <span style={styles.entryBook}>· {entry.book_title}</span>
-                  )}
-                </div>
-
-                {entry.role && (
-                  <span style={styles.entryBadge}>
-                    <LuTheater size={12} /> {entry.role}
-                  </span>
-                )}
-
-                {entry.plot_summary && (
-                  <p style={styles.entrySummary}>{entry.plot_summary}</p>
-                )}
-
-                <div style={styles.entryMeta}>
-                  <LuClock size={13} /> {formatDate(entry.created_at)}
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
+        <ReviewQueue entries={entries} />
       </main>
     </div>
   );
