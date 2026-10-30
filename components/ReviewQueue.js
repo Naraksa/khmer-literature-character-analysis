@@ -121,7 +121,7 @@ export default function ReviewQueue({ entries: initialEntries }) {
   if (entries.length === 0) {
     return (
       <div style={styles.emptyState}>
-        គ្មានធាតុដែលត្រូវត្រួតពិនិត្យទេ / No pending entries to review.
+        គ្មានកិច្ចការដែលត្រូវត្រួតពិនិត្យទេ / No pending entries to review.
       </div>
     );
   }
