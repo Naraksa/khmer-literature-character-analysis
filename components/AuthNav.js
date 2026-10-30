@@ -33,6 +33,23 @@ export default async function AuthNav() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // The Review link is shown only to reviewers. We gate it on the server with
+  // is_reviewer(); fail-safe: any error or non-true value hides the link. The
+  // real error goes to console.error only — never the UI.
+  let isReviewer = false;
+  if (user) {
+    try {
+      const { data: reviewerFlag, error } = await supabase.rpc("is_reviewer");
+      if (error) {
+        console.error("is_reviewer RPC failed:", error);
+      } else {
+        isReviewer = reviewerFlag === true;
+      }
+    } catch (err) {
+      console.error("is_reviewer RPC threw:", err);
+    }
+  }
+
   if (user) {
     return (
       <nav style={styles.nav}>
@@ -45,6 +62,11 @@ export default async function AuthNav() {
         <Link href="/my-entries" style={styles.link}>
           My entries
         </Link>
+        {isReviewer && (
+          <Link href="/review" style={styles.link}>
+            Review
+          </Link>
+        )}
         <LogoutButton />
       </nav>
     );
