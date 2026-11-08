@@ -101,6 +101,7 @@ const styles = {
 };
 
 export default function EntryCard({ entry, index }) {
+  const count = entry.perspectives?.length ?? 0;
   return (
     <Link href={`/characters/${entry.id}`} style={styles.link}>
       <article style={styles.card} className="literary-card">
@@ -118,11 +119,13 @@ export default function EntryCard({ entry, index }) {
           <div style={styles.metaChips}>
             <span style={{ ...styles.chip, ...styles.bookTitle }}>{entry.book_title}</span>
             <span style={styles.chip}> {entry.author}</span>
-            <span style={{ ...styles.chip, ...styles.yearChip }}>{entry.published_year}</span>
+            {entry.published_year ? (
+              <span style={{ ...styles.chip, ...styles.yearChip }}>{entry.published_year}</span>
+            ) : null}
           </div>
           <p style={styles.plot}>{entry.plot_summary}</p>
           <div style={styles.cta}>
-            <span> {entry.perspectives?.length || 1} Commentary Record{(entry.perspectives?.length || 1) > 1 ? "s" : ""}</span>
+            <span> {count} Commentary {count === 1 ? "Record" : "Records"}</span>
             <span className="read-cta" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>Read Analysis <LuArrowRight size={14} /></span>
           </div>
         </div>

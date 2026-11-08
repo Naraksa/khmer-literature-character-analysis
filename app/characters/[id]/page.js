@@ -10,6 +10,7 @@ import {
   LuMapPin,
   LuClock,
   LuUndo2,
+  LuMessageSquarePlus,
 } from "react-icons/lu";
 import { createClient } from "../../../lib/supabase/server.js";
 import EntryActions from "../../../components/EntryActions.js";
@@ -266,6 +267,34 @@ const styles = {
     fontSize: 13.5,
     opacity: 0.9,
   },
+  perspectivesEmpty: {
+    textAlign: "center",
+    padding: "48px 24px",
+    backgroundColor: "#FDFBF7",
+    border: "1px solid #DFD3BE",
+    borderRadius: 12,
+    boxShadow: "0 4px 14px rgba(60, 35, 20, 0.05)",
+  },
+  perspectivesEmptyIcon: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#B59A78",
+    marginBottom: 14,
+  },
+  perspectivesEmptyKh: {
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
+    fontSize: 17,
+    color: "#2C1810",
+    margin: "0 0 6px",
+  },
+  perspectivesEmptyEn: {
+    fontFamily: "'Lora', Georgia, serif",
+    fontSize: 14.5,
+    color: "#6E5743",
+    margin: 0,
+    lineHeight: 1.6,
+  },
 };
 
 export default async function CharacterPage({ params }) {
@@ -319,6 +348,11 @@ export default async function CharacterPage({ params }) {
     ? "Returned — needs changes. This entry is not public on the archive yet."
     : "Waiting for review. This entry is not public on the archive yet.";
 
+  // Real perspective count for the section pill + empty-state decision. Use
+  // ?? 0 (not || 0) so a real length of 0 is kept, not coerced to the fallback.
+  const perspectiveCount = entry.perspectives?.length ?? 0;
+  const hasPerspectives = perspectiveCount > 0;
+
   return (
     <main style={styles.container} className="fade-in-1">
       <Link href="/" style={styles.backLink}>
@@ -349,9 +383,11 @@ export default async function CharacterPage({ params }) {
         </div>
 
         <div style={styles.detailsCol}>
-          <div style={styles.badgeRow}>
-            <span style={{ ...styles.roleBadge, display: "inline-flex", alignItems: "center", gap: 6 }}><LuTheater size={12} /> {entry.role}</span>
-          </div>
+          {entry.role ? (
+            <div style={styles.badgeRow}>
+              <span style={{ ...styles.roleBadge, display: "inline-flex", alignItems: "center", gap: 6 }}><LuTheater size={12} /> {entry.role}</span>
+            </div>
+          ) : null}
 
           <h1 style={styles.name}>{entry.character}</h1>
 
@@ -366,7 +402,7 @@ export default async function CharacterPage({ params }) {
             </div>
             <div style={styles.metaItem}>
               <span style={{ ...styles.metaLabel, display: "inline-flex", alignItems: "center", gap: 6 }}><LuCalendar size={12} /> Published</span>
-              <span style={styles.metaValue}>{entry.published_year}</span>
+              <span style={styles.metaValue}>{entry.published_year ?? "—"}</span>
             </div>
           </div>
 
@@ -387,25 +423,34 @@ export default async function CharacterPage({ params }) {
           <span style={{ display: "inline-flex", alignItems: "center" }}><LuGraduationCap /></span>
           <span>Documented Analyses & Perspectives</span>
           <span style={styles.countPill}>
-            {entry.perspectives?.length || 0} Record
-            {(entry.perspectives?.length || 0) > 1 ? "s" : ""}
+            {perspectiveCount} {perspectiveCount === 1 ? "Record" : "Records"}
           </span>
         </h2>
 
-        <div style={styles.perspectivesList}>
-          {entry.perspectives?.map((item, idx) => (
-            <article key={idx} style={styles.perspectiveCard} className="literary-card">
-              <div style={styles.perspectiveHeader}>
-                <div style={{ ...styles.contributorName, display: "inline-flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ display: "inline-flex", alignItems: "center" }}><LuPenLine size={14} /></span>
-                  <span>{item.contributor}</span>
+        {hasPerspectives ? (
+          <div style={styles.perspectivesList}>
+            {entry.perspectives.map((item, idx) => (
+              <article key={idx} style={styles.perspectiveCard} className="literary-card">
+                <div style={styles.perspectiveHeader}>
+                  <div style={{ ...styles.contributorName, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ display: "inline-flex", alignItems: "center" }}><LuPenLine size={14} /></span>
+                    <span>{item.contributor}</span>
+                  </div>
+                  <span style={{ ...styles.placeBadge, display: "inline-flex", alignItems: "center", gap: 6 }}><LuMapPin size={12} /> {item.place}</span>
                 </div>
-                <span style={{ ...styles.placeBadge, display: "inline-flex", alignItems: "center", gap: 6 }}><LuMapPin size={12} /> {item.place}</span>
-              </div>
-              <p style={styles.perspectiveText}>"{item.analysis}"</p>
-            </article>
-          ))}
-        </div>
+                <p style={styles.perspectiveText}>"{item.analysis}"</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div style={styles.perspectivesEmpty} className="literary-card">
+            <div style={styles.perspectivesEmptyIcon}>
+              <LuMessageSquarePlus size={32} />
+            </div>
+            <p style={styles.perspectivesEmptyKh}>មិនទាន់មានអត្ថាធិប្បាយបន្ថែមនៅឡើយទេ</p>
+            <p style={styles.perspectivesEmptyEn}>No documented commentary perspectives yet.</p>
+          </div>
+        )}
       </section>
     </main>
   );
