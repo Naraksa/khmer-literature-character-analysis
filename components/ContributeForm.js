@@ -17,12 +17,12 @@ const supabase = createClient();
 // type "text" uses <input>; type "area" uses <textarea>; inputMode is set
 // only where it helps mobile keyboards.
 const FIELDS = [
-  { name: "slug", label: "Slug", type: "text", placeholder: "e.g. tum-teav-1952" },
-  { name: "character", label: "Character", type: "text" },
-  { name: "book_title", label: "Book title", type: "text" },
-  { name: "author", label: "Author", type: "text" },
-  { name: "published_year", label: "Published year (optional)", type: "text", inputMode: "numeric", placeholder: "e.g. 1952" },
-  { name: "plot_summary", label: "Plot summary (optional)", type: "area" },
+  { name: "slug", label: "Slug · ឈ្មោះខ្លី", type: "text", placeholder: "e.g. tum-teav-1915 (English lowercase & hyphens)" },
+  { name: "character", label: "Character · តួអង្គ", type: "text" },
+  { name: "book_title", label: "Book title · ចំណងជើងសៀវភៅ", type: "text" },
+  { name: "author", label: "Author · អ្នកនិពន្ធ", type: "text" },
+  { name: "published_year", label: "Published year (optional) · ឆ្នាំបោះពុម្ព (ស្រេចចិត្ត)", type: "text", inputMode: "numeric", placeholder: "e.g. 1952" },
+  { name: "plot_summary", label: "Plot summary (optional) · សង្ខេបគ្រោង (ស្រេចចិត្ត)", type: "area" },
 ];
 
 const EMPTY = { slug: "", character: "", role: "", book_title: "", author: "", published_year: "", plot_summary: "" };
@@ -81,7 +81,7 @@ export default function ContributeForm({ user, entry }) {
   return (
     <div style={styles.card}>
       <p style={styles.kicker}>Khmer Living Archive</p>
-      <h1 style={styles.title}>{editing ? "Edit entry" : "Contribute an entry"}</h1>
+      <h1 style={styles.title}>{editing ? "កែសម្រួលអត្ថបទ / Edit entry" : "រួមចំណែកអត្ថបទ / Contribute an entry"}</h1>
       {formError && <p style={styles.error} role="alert">{formError}</p>}
       <form onSubmit={onSubmit} noValidate>
         {FIELDS.map((f) => (
@@ -98,14 +98,14 @@ export default function ContributeForm({ user, entry }) {
             )}
           </ContributeField>
         ))}
-        <ContributeField id="role" label="Role (optional)" error={errors.role}>
+        <ContributeField id="role" label="Role (optional) · តួនាទី (ស្រេចចិត្ត)" error={errors.role}>
           <select id="role" value={values.role} style={styles.input}
             onChange={(e) => update("role", e.target.value)} onBlur={() => onBlur("role")}>
-            <option value="">-- Select a role --</option>
+            <option value="">-- ជ្រើសរើសតួនាទី / Select a role --</option>
             {ALLOWED_ROLES.map((r) => (<option key={r} value={r}>{r}</option>))}
           </select>
         </ContributeField>
-        <ContributeField id="photo" label={editing ? "Photo (optional)" : "Photo (required)"} error={null}>
+        <ContributeField id="photo" label={editing ? "Photo (optional) · រូបភាព (ស្រេចចិត្ត)" : "Photo (required) · រូបភាព (ចាំបាច់)"} error={null}>
           <input id="photo" type="file" accept="image/*" style={styles.input}
             onChange={(e) => setPhoto(e.target.files[0] ?? null)} />
           <p style={styles.fileHint}>
@@ -114,7 +114,7 @@ export default function ContributeForm({ user, entry }) {
         </ContributeField>
         <button type="submit" disabled={busy}
           style={{ ...styles.submit, ...(busy ? styles.submitDisabled : {}) }}>
-          <LuUpload size={15} /> {busy ? "Saving…" : editing ? "Save changes" : "Publish entry"}
+          <LuUpload size={15} /> {busy ? "កំពុងរក្សាទុក… / Saving…" : editing ? "រក្សាទុកការកែប្រែ / Save changes" : "ដាក់ស្នើដើម្បីត្រួតពិនិត្យ / Submit for review"}
         </button>
       </form>
     </div>

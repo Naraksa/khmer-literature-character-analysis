@@ -6,11 +6,19 @@ const styles = {
   nav: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     gap: 12,
     fontFamily: "'Inter', sans-serif",
     fontSize: 13.5,
     color: "#6E5743",
+    flexWrap: "wrap",
+  },
+  rightGroup: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    flexWrap: "wrap",
+    justifyContent: "flex-end",
   },
   email: {
     overflow: "hidden",
@@ -24,6 +32,14 @@ const styles = {
     fontWeight: 600,
     textDecoration: "none",
     whiteSpace: "nowrap",
+  },
+  homeLink: {
+    color: "#2C1810",
+    fontWeight: 700,
+    textDecoration: "none",
+    whiteSpace: "nowrap",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
+    fontSize: 15,
   },
 };
 
@@ -53,33 +69,43 @@ export default async function AuthNav() {
   if (user) {
     return (
       <nav style={styles.nav}>
-        <span style={styles.email} title={user.email}>
-          {user.email}
-        </span>
-        <Link href="/contribute" style={styles.link}>
-          Contribute
+        <Link href="/" style={styles.homeLink}>
+          ទំព័រដើម · Archive
         </Link>
-        <Link href="/my-entries" style={styles.link}>
-          My entries
-        </Link>
-        {isReviewer && (
-          <Link href="/review" style={styles.link}>
-            Review
+        <div style={styles.rightGroup}>
+          <span style={styles.email} title={user.email}>
+            {user.email}
+          </span>
+          <Link href="/contribute" style={styles.link}>
+            រួមចំណែក / Contribute
           </Link>
-        )}
-        <LogoutButton />
+          <Link href="/my-entries" style={styles.link}>
+            អត្ថបទរបស់ខ្ញុំ / My entries
+          </Link>
+          {isReviewer && (
+            <Link href="/review" style={styles.link}>
+              ត្រួតពិនិត្យ / Review
+            </Link>
+          )}
+          <LogoutButton />
+        </div>
       </nav>
     );
   }
 
   return (
     <nav style={styles.nav}>
-      <Link href="/login" style={styles.link}>
-        Log in
+      <Link href="/" style={styles.homeLink}>
+        ទំព័រដើម · Archive
       </Link>
-      <Link href="/signup" style={styles.link}>
-        Sign up
-      </Link>
+      <div style={styles.rightGroup}>
+        <Link href="/login" style={styles.link}>
+          ចូលគណនី / Log in
+        </Link>
+        <Link href="/signup" style={styles.link}>
+          ចុះឈ្មោះ / Sign up
+        </Link>
+      </div>
     </nav>
   );
 }
