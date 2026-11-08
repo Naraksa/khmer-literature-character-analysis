@@ -123,7 +123,7 @@ export default async function ReviewPage() {
   try {
     const { data, error: fetchErr } = await supabase
       .from("entries")
-      .select("id, character, book_title, role, plot_summary, created_at")
+      .select("id, character, book_title, role, plot_summary, created_at, image, author, published_year")
       .eq("status", "pending")
       .order("created_at", { ascending: true });
     if (fetchErr) {

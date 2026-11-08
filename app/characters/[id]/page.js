@@ -8,6 +8,8 @@ import {
   LuScroll,
   LuGraduationCap,
   LuMapPin,
+  LuClock,
+  LuUndo2,
 } from "react-icons/lu";
 import { createClient } from "../../../lib/supabase/server.js";
 import EntryActions from "../../../components/EntryActions.js";
@@ -231,6 +233,39 @@ const styles = {
     textAlign: "center",
     padding: "80px 24px",
   },
+  statusBanner: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: 12,
+    padding: "14px 18px",
+    borderRadius: 10,
+    marginBottom: 20,
+    fontFamily: "'Inter', sans-serif",
+    fontSize: 14,
+    lineHeight: 1.6,
+    borderWidth: 1,
+    borderStyle: "solid",
+  },
+  statusBannerPending: {
+    color: "#8C6D1F",
+    backgroundColor: "#FBF3DD",
+    borderColor: "#E8D9A8",
+  },
+  statusBannerReturned: {
+    color: "#9A3412",
+    backgroundColor: "#FBF1EC",
+    borderColor: "#E8C9BC",
+  },
+  statusBannerKh: {
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
+    fontSize: 15,
+    margin: 0,
+  },
+  statusBannerEn: {
+    margin: 0,
+    fontSize: 13.5,
+    opacity: 0.9,
+  },
 };
 
 export default async function CharacterPage({ params }) {
@@ -239,7 +274,7 @@ export default async function CharacterPage({ params }) {
   const { data: entry } = await supabase
     .from("entries")
     .select(
-      "id, owner, slug, character, role, book_title, author, published_year, image, plot_summary, perspectives"
+      "id, owner, slug, character, role, book_title, author, published_year, image, plot_summary, perspectives, status"
     )
     .eq("id", id)
     .maybeSingle();
@@ -268,11 +303,42 @@ export default async function CharacterPage({ params }) {
     );
   }
 
+  // Status banner: when an entry is not yet public (status is "pending" or
+  // "returned"), tell the owner clearly in Khmer + English before the hero so
+  // they don't mistake it for a published archive page. Published entries show
+  // no banner. Icons only — no emojis — per the codebase convention.
+  const isPending = entry.status === "pending";
+  const isReturned = entry.status === "returned";
+  const showStatusBanner = isPending || isReturned;
+  const bannerVariant = isReturned ? styles.statusBannerReturned : styles.statusBannerPending;
+  const BannerIcon = isReturned ? LuUndo2 : LuClock;
+  const bannerKh = isReturned
+    ? "បានបង្វិលជូនវិញ — ត្រូវការកែសម្រួល"
+    : "កំពុងរង់ចាំការត្រួតពិនិត្យ";
+  const bannerEn = isReturned
+    ? "Returned — needs changes. This entry is not public on the archive yet."
+    : "Waiting for review. This entry is not public on the archive yet.";
+
   return (
     <main style={styles.container} className="fade-in-1">
       <Link href="/" style={styles.backLink}>
         <LuArrowLeft size={14} /> Return to Collection Catalog
       </Link>
+
+      {showStatusBanner && (
+        <div
+          role="status"
+          style={{ ...styles.statusBanner, ...bannerVariant }}
+        >
+          <span style={{ display: "inline-flex", alignItems: "center", flexShrink: 0, marginTop: 2 }}>
+            <BannerIcon size={18} />
+          </span>
+          <div>
+            <p style={styles.statusBannerKh}>{bannerKh}</p>
+            <p style={styles.statusBannerEn}>{bannerEn}</p>
+          </div>
+        </div>
+      )}
 
       {/* Hero Character Profile */}
       <section style={styles.heroSection}>

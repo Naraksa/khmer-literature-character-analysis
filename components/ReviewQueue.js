@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LuTheater, LuClock, LuCheck, LuUndo2 } from "react-icons/lu";
+import { LuTheater, LuClock, LuCheck, LuUndo2, LuPenLine, LuCalendar } from "react-icons/lu";
 import { createClient } from "../lib/supabase/client.js";
 
 const supabase = createClient();
@@ -18,6 +18,26 @@ const styles = {
     backgroundColor: "#FDFBF7", border: "1px solid #DFD3BE",
     borderRadius: 12, padding: "18px 20px",
     boxShadow: "0 4px 14px rgba(60, 35, 20, 0.06)",
+  },
+  entryTopRow: {
+    display: "flex", gap: 16, flexWrap: "wrap",
+  },
+  entryThumbWrap: {
+    flex: "0 0 120px", width: 120, height: 120, borderRadius: 10,
+    overflow: "hidden", backgroundColor: "#EBE0CF", border: "1px solid #DACAB3",
+  },
+  entryThumb: {
+    width: "100%", height: "100%", objectFit: "cover", display: "block",
+  },
+  entryBody: {
+    display: "flex", flexDirection: "column", gap: 10, flex: 1, minWidth: 0,
+  },
+  entryFacts: {
+    display: "flex", flexWrap: "wrap", gap: 14,
+    fontFamily: "'Lora', Georgia, serif", fontSize: 13, color: "#5C4636",
+  },
+  entryFact: {
+    display: "inline-flex", alignItems: "center", gap: 6,
   },
   entryTitleRow: { display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" },
   entryCharacter: {
@@ -140,15 +160,39 @@ export default function ReviewQueue({ entries: initialEntries }) {
               )}
             </div>
 
-            {entry.role && (
-              <span style={styles.entryBadge}>
-                <LuTheater size={12} /> {entry.role}
-              </span>
-            )}
+            <div style={styles.entryTopRow}>
+              {entry.image && (
+                <div style={styles.entryThumbWrap}>
+                  <img src={entry.image} alt={entry.character} style={styles.entryThumb} />
+                </div>
+              )}
+              <div style={styles.entryBody}>
+                {entry.role && (
+                  <span style={styles.entryBadge}>
+                    <LuTheater size={12} /> {entry.role}
+                  </span>
+                )}
 
-            {entry.plot_summary && (
-              <p style={styles.entrySummary}>{entry.plot_summary}</p>
-            )}
+                {(entry.author || entry.published_year) && (
+                  <div style={styles.entryFacts}>
+                    {entry.author && (
+                      <span style={styles.entryFact}>
+                        <LuPenLine size={13} /> {entry.author}
+                      </span>
+                    )}
+                    {entry.published_year && (
+                      <span style={styles.entryFact}>
+                        <LuCalendar size={13} /> {entry.published_year}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {entry.plot_summary && (
+                  <p style={styles.entrySummary}>{entry.plot_summary}</p>
+                )}
+              </div>
+            </div>
 
             <div style={styles.entryMeta}>
               <LuClock size={13} /> {formatDate(entry.created_at)}
