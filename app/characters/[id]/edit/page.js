@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LuArrowLeft } from "react-icons/lu";
 import { createClient } from "../../../../lib/supabase/server.js";
 import ContributeForm from "../../../../components/ContributeForm.js";
 
@@ -17,9 +18,9 @@ const styles = {
     maxWidth: 480,
     backgroundColor: "#FDFBF7",
     border: "1px solid #DFD3BE",
-    borderRadius: 10,
+    borderRadius: 12,
     padding: "40px 36px",
-    boxShadow: "0 2px 8px rgba(60, 35, 20, 0.04)",
+    boxShadow: "0 4px 14px rgba(60, 35, 20, 0.05)",
     textAlign: "center",
   },
   title: {
@@ -30,7 +31,7 @@ const styles = {
     fontFamily: "'Hanuman', 'Lora', Georgia, serif",
   },
   message: {
-    fontFamily: "'Lora', Georgia, serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
     fontSize: 15.5,
     color: "#5C4636",
     margin: "0 0 24px",
@@ -38,7 +39,7 @@ const styles = {
   },
   link: {
     display: "inline-block",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
     fontSize: 13.5,
     fontWeight: 600,
     color: "#FFFFFF",
@@ -50,7 +51,23 @@ const styles = {
   formWrap: {
     maxWidth: 1240,
     margin: "0 auto",
-    padding: "48px 24px 80px",
+    padding: "40px 24px 80px",
+  },
+  backLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    color: "#6B3A19",
+    textDecoration: "none",
+    fontSize: 13.5,
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontWeight: 600,
+    marginBottom: 24,
+    padding: "8px 16px",
+    borderRadius: 8,
+    backgroundColor: "#F4ECE0",
+    border: "1px solid #DFD2BF",
+    boxShadow: "0 2px 6px rgba(60, 35, 20, 0.04)",
   },
 };
 
@@ -67,9 +84,9 @@ export default async function EditPage({ params }) {
     return (
       <main style={styles.page}>
         <div style={styles.card}>
-          <h1 style={styles.title}>Log in to edit</h1>
-          <p style={styles.message}>You need an account to edit entries.</p>
-          <Link href="/login" style={styles.link}>Log in</Link>
+          <h1 style={styles.title}>ចូលគណនីដើម្បីកែប្រែ</h1>
+          <p style={styles.message}>You need an account to edit entries. / លោកអ្នកត្រូវចូលគណនីដើម្បីកែសម្រួលអត្ថបទ។</p>
+          <Link href="/login" style={styles.link}>ចូលគណនី / Log in</Link>
         </div>
       </main>
     );
@@ -85,8 +102,8 @@ export default async function EditPage({ params }) {
     return (
       <main style={styles.page}>
         <div style={styles.card}>
-          <h1 style={styles.title}>Entry not found</h1>
-          <Link href="/" style={styles.link}>Back to catalog</Link>
+          <h1 style={styles.title}>រកមិនឃើញអត្ថបទទេ / Entry not found</h1>
+          <Link href="/" style={styles.link}>ត្រឡប់ទៅទំព័រដើម / Back to catalog</Link>
         </div>
       </main>
     );
@@ -98,8 +115,8 @@ export default async function EditPage({ params }) {
       <main style={styles.page}>
         <div style={styles.card}>
           <h1 style={styles.title}>You can't edit this entry</h1>
-          <p style={styles.message}>You can only edit entries you own.</p>
-          <Link href={`/characters/${id}`} style={styles.link}>Back to entry</Link>
+          <p style={styles.message}>You can only edit entries you own. / លោកអ្នកអាចកែប្រែបានតែអត្ថបទដែលជារបស់ខ្លួនប៉ុណ្ណោះ។</p>
+          <Link href={`/characters/${id}`} style={styles.link}>ត្រឡប់ទៅអត្ថបទ / Back to entry</Link>
         </div>
       </main>
     );
@@ -120,6 +137,9 @@ export default async function EditPage({ params }) {
 
   return (
     <main style={styles.formWrap}>
+      <Link href={`/characters/${id}`} style={styles.backLink}>
+        <LuArrowLeft size={14} /> Return to Character Profile
+      </Link>
       <ContributeForm user={user} entry={editable} />
     </main>
   );

@@ -8,7 +8,7 @@ const styles = {
     border: "1px solid #DFD3BE",
     borderRadius: 12,
     overflow: "hidden",
-    boxShadow: "0 4px 14px rgba(60, 35, 20, 0.06)",
+    boxShadow: "0 4px 14px rgba(60, 35, 20, 0.05)",
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -27,7 +27,7 @@ const styles = {
     left: 0,
     right: 0,
     height: "45%",
-    background: "linear-gradient(to top, rgba(44, 24, 16, 0.5) 0%, transparent 100%)",
+    background: "linear-gradient(to top, rgba(44, 24, 16, 0.55) 0%, transparent 100%)",
   },
   badgeRow: {
     position: "absolute",
@@ -42,21 +42,23 @@ const styles = {
     backgroundColor: "rgba(253, 251, 247, 0.96)",
     border: "1px solid #C8B79E",
     color: "#2C1810",
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 700,
     padding: "3px 12px",
     borderRadius: 6,
-    fontFamily: "'Hanuman', serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
     boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+    lineHeight: 1.4,
   },
   indexTag: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 11,
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 11.5,
     fontWeight: 600,
     color: "#FFFFFF",
     backgroundColor: "rgba(44, 24, 16, 0.85)",
     padding: "3px 8px",
     borderRadius: 4,
+    lineHeight: 1.3,
   },
   content: {
     padding: "18px 20px 20px",
@@ -67,24 +69,38 @@ const styles = {
   },
   metaChips: { display: "flex", flexWrap: "wrap", gap: 7 },
   chip: {
-    fontSize: 12.5,
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 13,
     color: "#4A3626",
     backgroundColor: "#F4ECE0",
-    padding: "3px 9px",
-    borderRadius: 4,
+    padding: "3px 10px",
+    borderRadius: 5,
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: "#DFD2BF",
-    lineHeight: 1.4,
+    lineHeight: 1.45,
   },
-  bookTitle: { color: "#7B3F00", backgroundColor: "#F7EFE2", borderColor: "#E3CEB4", fontWeight: 600 },
-  yearChip: { fontFamily: "'Inter', sans-serif", fontSize: 11.5, color: "#6E5743" },
+  bookTitle: {
+    color: "#7B3F00",
+    backgroundColor: "#F7EFE2",
+    borderColor: "#E3CEB4",
+    fontWeight: 600,
+  },
+  yearChip: {
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 12,
+    color: "#6E5743",
+  },
   plot: {
     fontSize: 14.5,
     color: "#3D2B1D",
-    lineHeight: 1.75,
+    lineHeight: 1.8,
     margin: 0,
-    fontFamily: "'Hanuman', serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
+    display: "-webkit-box",
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
   },
   cta: {
     marginTop: "auto",
@@ -96,7 +112,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
   },
 };
 
@@ -118,15 +134,17 @@ export default function EntryCard({ entry, index }) {
         <div style={styles.content}>
           <div style={styles.metaChips}>
             <span style={{ ...styles.chip, ...styles.bookTitle }}>{entry.book_title}</span>
-            <span style={styles.chip}> {entry.author}</span>
+            <span style={styles.chip}>{entry.author}</span>
             {entry.published_year ? (
               <span style={{ ...styles.chip, ...styles.yearChip }}>{entry.published_year}</span>
             ) : null}
           </div>
           <p style={styles.plot}>{entry.plot_summary}</p>
           <div style={styles.cta}>
-            <span> {count} Commentary {count === 1 ? "Record" : "Records"}</span>
-            <span className="read-cta" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>Read Analysis <LuArrowRight size={14} /></span>
+            <span>{count} Commentary {count === 1 ? "Record" : "Records"}</span>
+            <span className="read-cta" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              Read Analysis <LuArrowRight size={14} />
+            </span>
           </div>
         </div>
       </article>

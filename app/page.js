@@ -1,7 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LuSearch, LuLibrary, LuArrowLeft, LuArrowRight } from "react-icons/lu";
+import Link from "next/link";
+import {
+  LuSearch,
+  LuLibrary,
+  LuArrowLeft,
+  LuArrowRight,
+  LuPlus,
+  LuBookOpen,
+  LuFolderGit2,
+  LuShieldCheck,
+  LuSparkles,
+} from "react-icons/lu";
 import collection from "../collection.config.js";
 import EntryCard from "../components/EntryCard.js";
 import { createClient } from "../lib/supabase/client.js";
@@ -23,88 +34,73 @@ const styles = {
   heroInner: {
     maxWidth: 1240,
     margin: "0 auto",
-    padding: "48px 24px 56px",
+    padding: "40px 24px 48px",
   },
-  topBar: {
+  heroKickerRow: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingBottom: 20,
-    borderBottom: "1px solid #DDCFBC",
-    marginBottom: 36,
+    marginBottom: 20,
     flexWrap: "wrap",
     gap: 12,
   },
-  brandPill: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 10,
-    fontFamily: "'Lora', Georgia, serif",
-    fontSize: 13,
-    fontWeight: 600,
-    color: "#6B3A19",
-    letterSpacing: 0.5,
-    backgroundColor: "#FAF6EE",
-    border: "1px solid #D5C2A8",
-    borderRadius: 8,
-    padding: "6px 14px",
-    boxShadow: "0 2px 5px rgba(107, 58, 25, 0.06)",
-  },
-  bookIcon: {
-    fontSize: 16,
-  },
-  capstoneTag: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 12.5,
-    color: "#7E6A56",
-    fontWeight: 500,
-  },
-  heroContent: {
-    maxWidth: 860,
-    marginBottom: 40,
-  },
   kicker: {
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
     color: "#8B4513",
-    fontSize: 11.5,
+    fontSize: 12,
     fontWeight: 700,
-    letterSpacing: 2,
+    letterSpacing: 1.5,
     textTransform: "uppercase",
-    margin: "0 0 14px",
+    margin: 0,
     display: "flex",
     alignItems: "center",
     gap: 8,
   },
+  capstoneTag: {
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 12,
+    color: "#7E6A56",
+    fontWeight: 500,
+    backgroundColor: "#FAF6EE",
+    border: "1px solid #D8CBB6",
+    padding: "4px 10px",
+    borderRadius: 6,
+  },
+  heroContent: {
+    maxWidth: 880,
+    marginBottom: 32,
+  },
   title: {
-    fontSize: 42,
+    fontSize: 38,
     fontWeight: 700,
     color: "#2C1810",
-    margin: "0 0 16px",
-    lineHeight: 1.25,
+    margin: "0 0 14px",
+    lineHeight: 1.3,
     letterSpacing: "-0.5px",
     fontFamily: "'Hanuman', 'Lora', Georgia, serif",
   },
   description: {
-    fontSize: 17.5,
+    fontSize: 17,
     color: "#5C4636",
     lineHeight: 1.85,
     margin: 0,
-    fontFamily: "'Lora', Georgia, serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
   },
   metaGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
     gap: 16,
+    marginBottom: 28,
   },
   metaCard: {
     backgroundColor: "#FBF8F1",
     border: "1px solid #DACBB4",
     borderRadius: 10,
-    padding: "18px 22px",
-    boxShadow: "0 2px 8px rgba(60, 35, 20, 0.04)",
+    padding: "16px 20px",
+    boxShadow: "0 2px 8px rgba(60, 35, 20, 0.03)",
   },
   metaLabel: {
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
     fontSize: 11,
     color: "#8C715A",
     letterSpacing: 1.2,
@@ -121,6 +117,91 @@ const styles = {
     fontWeight: 600,
     margin: 0,
     lineHeight: 1.5,
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
+  },
+
+  /* ── Action Hub / Contributor Workbench ── */
+  actionHub: {
+    backgroundColor: "#FAF6EE",
+    border: "1px solid #D5C2A8",
+    borderRadius: 12,
+    padding: "18px 22px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 16,
+    boxShadow: "0 3px 10px rgba(60, 35, 20, 0.04)",
+  },
+  actionHubInfo: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 4,
+  },
+  actionHubHeading: {
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
+    fontSize: 15,
+    fontWeight: 700,
+    color: "#2C1810",
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+  },
+  actionHubSub: {
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
+    fontSize: 13,
+    color: "#7E6A56",
+  },
+  actionButtonsGroup: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    flexWrap: "wrap",
+  },
+  primaryBtn: {
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#FFFFFF",
+    backgroundColor: "#6B3A19",
+    border: "1px solid #6B3A19",
+    borderRadius: 8,
+    padding: "8px 16px",
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 7,
+    boxShadow: "0 2px 6px rgba(107, 58, 25, 0.15)",
+    transition: "background-color 0.2s ease, transform 0.15s ease",
+  },
+  secondaryBtn: {
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#6B3A19",
+    backgroundColor: "#FDFBF7",
+    border: "1px solid #DFD3BE",
+    borderRadius: 8,
+    padding: "8px 14px",
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 7,
+    transition: "background-color 0.2s ease",
+  },
+  reviewerBtn: {
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#9A3412",
+    backgroundColor: "#FDF2EC",
+    border: "1px solid #E8C9BC",
+    borderRadius: 8,
+    padding: "8px 14px",
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 7,
   },
 
   /* ── Content Section ── */
@@ -129,7 +210,7 @@ const styles = {
     width: "100%",
     maxWidth: 1240,
     margin: "0 auto",
-    padding: "48px 24px 80px",
+    padding: "44px 24px 80px",
   },
   sectionBar: {
     display: "flex",
@@ -137,7 +218,7 @@ const styles = {
     justifyContent: "space-between",
     paddingBottom: 16,
     borderBottom: "2px solid #E0D4C1",
-    marginBottom: 36,
+    marginBottom: 32,
     flexWrap: "wrap",
     gap: 12,
   },
@@ -147,15 +228,15 @@ const styles = {
     gap: 10,
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 700,
     color: "#2C1810",
     margin: 0,
-    fontFamily: "'Lora', Georgia, serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
   },
   badge: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 12,
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 12.5,
     color: "#6B3A19",
     backgroundColor: "#EFE6D6",
     border: "1px solid #D5C2A8",
@@ -174,7 +255,7 @@ const styles = {
     textAlign: "center",
     padding: "48px 24px",
     color: "#8B7355",
-    fontFamily: "'Lora', Georgia, serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
     fontSize: 16,
   },
   placeholderCard: {
@@ -221,12 +302,12 @@ const styles = {
     backgroundColor: "transparent",
     fontSize: 15,
     color: "#2C1810",
-    fontFamily: "'Lora', Georgia, serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
     padding: "4px 0",
   },
   searchHint: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 11.5,
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 12,
     color: "#A08B6F",
     whiteSpace: "nowrap",
   },
@@ -243,15 +324,15 @@ const styles = {
     borderTop: "2px solid #E0D4C1",
   },
   pageStatus: {
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
     fontSize: 12.5,
     color: "#6E5743",
     fontWeight: 600,
     margin: "0 6px",
   },
   pageBtn: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 13.5,
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 13,
     fontWeight: 600,
     color: "#6B3A19",
     backgroundColor: "#FDFBF7",
@@ -294,7 +375,7 @@ const styles = {
     gap: 16,
     fontSize: 13.5,
     color: "#6D5846",
-    fontFamily: "'Lora', Georgia, serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
   },
 };
 
@@ -303,15 +384,29 @@ const PAGE_SIZE = 3;
 export default function Home() {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
-
-  // Entries now come from Supabase (newest first), not the local data file.
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [isReviewer, setIsReviewer] = useState(false);
 
   useEffect(() => {
     let active = true;
     setLoading(true);
     const supabase = createClient();
+
+    // Check auth status & reviewer role for the Action Hub
+    supabase.auth.getUser().then(({ data }) => {
+      if (!active) return;
+      if (data?.user) {
+        setUser(data.user);
+        supabase.rpc("is_reviewer").then(({ data: revFlag }) => {
+          if (active && revFlag === true) {
+            setIsReviewer(true);
+          }
+        });
+      }
+    });
+
     supabase
       .from("entries")
       .select(
@@ -328,6 +423,7 @@ export default function Home() {
         }
         setLoading(false);
       });
+
     return () => {
       active = false;
     };
@@ -349,9 +445,6 @@ export default function Home() {
       })
     : entries;
 
-  // Pagination is applied AFTER filtering, so the page count reflects the
-  // currently visible (filtered) results. safePage guards against an out-of
-  // -range page when the filter shrinks the result set (e.g. after a search).
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const startIdx = (safePage - 1) * PAGE_SIZE;
@@ -362,20 +455,15 @@ export default function Home() {
       {/* Literary Hero Banner */}
       <section style={styles.heroSection} className="fade-in-1">
         <div style={styles.heroInner}>
-          <header style={styles.topBar}>
-            <div style={styles.brandPill}>
-              <span className="floating-book" style={styles.bookIcon}></span>
-              <span>Khmer Living Archive</span>
-              <span>·</span>
-              <span>Literature Monograph</span>
-            </div>
-            <span style={styles.capstoneTag}>ICT 340 · Capstone · Fall 2026</span>
-          </header>
+          <div style={styles.heroKickerRow}>
+            <p style={styles.kicker}>
+              <LuSparkles size={14} style={{ color: "#8B4513" }} />
+              <span>ការវិភាគតួអង្គអក្សរសិល្ប៍ខ្មែរ · Classical Character Monograph</span>
+            </p>
+            <span style={styles.capstoneTag}>ICT 340 · Capstone Collection · Fall 2026</span>
+          </div>
 
           <div style={styles.heroContent}>
-            <p style={styles.kicker}>
-              <span>Literary Character Analysis & Perspectives</span>
-            </p>
             <h1 style={styles.title}>{collection.name}</h1>
             <p style={styles.description}>{collection.description}</p>
           </div>
@@ -383,21 +471,57 @@ export default function Home() {
           <div style={styles.metaGrid}>
             <div style={styles.metaCard}>
               <p style={styles.metaLabel}>
-                <span>Curator</span>
+                <span>អ្នករៀបរៀង / Curator</span>
               </p>
               <p style={styles.metaValue}>{collection.curator}</p>
             </div>
             <div style={styles.metaCard}>
               <p style={styles.metaLabel}>
-                <span>Primary Sources</span>
+                <span>ប្រភពចំណេះដឹង / Primary Sources</span>
               </p>
               <p style={styles.metaValue}>{collection.source}</p>
             </div>
             <div style={styles.metaCard}>
               <p style={styles.metaLabel}>
-                <span>Collection Scope</span>
+                <span>ទំហំនៃបណ្ណសារ / Collection Scope</span>
               </p>
               <p style={styles.metaValue}>{entries.length} Classical Figures</p>
+            </div>
+          </div>
+
+          {/* Archival Action Hub (Contributor & Reviewer Workbench) */}
+          <div style={styles.actionHub}>
+            <div style={styles.actionHubInfo}>
+              <div style={styles.actionHubHeading}>
+                <LuBookOpen size={16} style={{ color: "#8B4513" }} />
+                <span>បន្ទប់ស្រាវជ្រាវ & រួមចំណែក · Contributor & Archive Hub</span>
+              </div>
+              <span style={styles.actionHubSub}>
+                {user
+                  ? `បានចូលជាគណនី (${user.email}) — អាចបន្ថែមការវិភាគថ្មី ឬតាមដានការត្រួតពិនិត្យ`
+                  : "ចូលរួមចំណែកបន្ថែមទស្សនវិភាគតួអង្គអក្សរសិល្ប៍ខ្មែរ និងថែរក្សាស្នាដៃបុរាណ"}
+              </span>
+            </div>
+
+            <div style={styles.actionButtonsGroup}>
+              <Link href="/contribute" style={styles.primaryBtn}>
+                <LuPlus size={16} />
+                <span>រួមចំណែកតួអង្គ / Contribute Figure</span>
+              </Link>
+
+              {user ? (
+                <Link href="/my-entries" style={styles.secondaryBtn}>
+                  <LuFolderGit2 size={15} />
+                  <span>អត្ថបទរបស់ខ្ញុំ / My Entries</span>
+                </Link>
+              ) : null}
+
+              {isReviewer ? (
+                <Link href="/review" style={styles.reviewerBtn}>
+                  <LuShieldCheck size={16} />
+                  <span>ជួរត្រួតពិនិត្យ / Review Queue</span>
+                </Link>
+              ) : null}
             </div>
           </div>
         </div>
@@ -407,8 +531,10 @@ export default function Home() {
       <main style={styles.contentSection} className="fade-in-2">
         <div style={styles.sectionBar}>
           <div style={styles.sectionTitleWrap}>
-            <span style={{ fontSize: 20, display: "inline-flex", alignItems: "center" }}><LuLibrary /></span>
-            <h2 style={styles.sectionTitle}>Archived Literary Figures & Analyses</h2>
+            <span style={{ fontSize: 20, display: "inline-flex", alignItems: "center", color: "#6B3A19" }}>
+              <LuLibrary />
+            </span>
+            <h2 style={styles.sectionTitle}>តារាងតួអង្គអក្សរសិល្ប៍ · Archived Literary Figures</h2>
           </div>
           <span style={styles.badge}>
             Showing {pageEntries.length} of {filtered.length} Figures
@@ -417,7 +543,9 @@ export default function Home() {
 
         {/* Search */}
         <div style={styles.searchWrap}>
-          <span style={{ ...styles.searchIcon, display: "inline-flex", alignItems: "center" }}><LuSearch size={18} /></span>
+          <span style={{ ...styles.searchIcon, display: "inline-flex", alignItems: "center" }}>
+            <LuSearch size={18} />
+          </span>
           <input
             type="search"
             value={query}
@@ -425,30 +553,32 @@ export default function Home() {
               setQuery(e.target.value);
               setPage(1);
             }}
-            placeholder="Search archived figures…"
+            placeholder="ស្វែងរកតាមឈ្មោះតួអង្គ សៀវភៅ ឬអ្នកនិពន្ធ… / Search archived figures, books, authors…"
             aria-label="Search archived figures"
             style={styles.searchInput}
           />
-          {q && <span style={styles.searchHint}>{filtered.length} match{filtered.length === 1 ? "" : "es"}</span>}
+          {q && (
+            <span style={styles.searchHint}>
+              {filtered.length} match{filtered.length === 1 ? "" : "es"}
+            </span>
+          )}
         </div>
 
         {loading ? (
-          /* Loading skeleton — keeps the grid layout stable while entries
-             are being fetched from Supabase. */
           <div style={styles.cardsGrid} aria-busy="true" aria-live="polite">
             {[0, 1, 2].map((i) => (
               <div key={i} style={styles.placeholderCard} aria-hidden="true">
                 <div style={styles.placeholderImage} />
                 <div style={styles.placeholderContent}>
-                  <p style={{ ...styles.plot, color: "#8B7355" }}>
-                    Loading archived figures…
+                  <p style={{ color: "#8B7355", fontFamily: "'Hanuman', 'Lora', Georgia, serif", fontSize: 14 }}>
+                    កំពុងផ្ទុកទិន្នន័យតួអង្គ… / Loading archived figures…
                   </p>
                 </div>
               </div>
             ))}
           </div>
         ) : entries.length === 0 ? (
-          <p style={styles.emptyState}>No archived figures yet.</p>
+          <p style={styles.emptyState}>មិនទាន់មានតួអង្គដែលបានបោះពុម្ពផ្សាយនៅឡើយទេ។ / No archived figures yet.</p>
         ) : (
           <>
             <div style={styles.cardsGrid}>
@@ -457,15 +587,13 @@ export default function Home() {
               ))}
             </div>
 
-            {/* No-results empty state for a search that matches nothing. */}
             {filtered.length === 0 && (
-              <p style={styles.emptyState}>No matching figures.</p>
+              <p style={styles.emptyState}>មិនមានទិន្នន័យត្រូវគ្នានឹងការស្វែងរកទេ។ / No matching figures.</p>
             )}
           </>
         )}
 
-        {/* Pagination — numbered pages + Previous/Next, shown only when
-            more than one page of results exists. */}
+        {/* Pagination */}
         {totalPages > 1 && (
           <nav style={styles.paginationBar} aria-label="Archive pagination">
             <button
@@ -478,7 +606,9 @@ export default function Home() {
                 ...(safePage <= 1 ? styles.pageBtnDisabled : {}),
               }}
             >
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><LuArrowLeft size={14} /> Previous</span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <LuArrowLeft size={14} /> Previous
+              </span>
             </button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => {
@@ -510,7 +640,9 @@ export default function Home() {
                 ...(safePage >= totalPages ? styles.pageBtnDisabled : {}),
               }}
             >
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>Next <LuArrowRight size={14} /></span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                Next <LuArrowRight size={14} />
+              </span>
             </button>
 
             <span style={styles.pageStatus}>
@@ -524,7 +656,7 @@ export default function Home() {
       <footer style={styles.footer}>
         <div style={styles.footerInner}>
           <div>
-             American University of Phnom Penh · ICT 340: Vibe Coding
+            American University of Phnom Penh · ICT 340: Vibe Coding
           </div>
           <div>
             Preserving classical Khmer literature through scholarly and youth perspectives.

@@ -18,13 +18,13 @@ const styles = {
   main: { flex: 1, width: "100%", maxWidth: 1000, margin: "0 auto", padding: "44px 24px 80px" },
   backLink: {
     display: "inline-flex", alignItems: "center", gap: 8, color: "#6B3A19",
-    textDecoration: "none", fontSize: 13.5, fontFamily: "'Lora', Georgia, serif",
+    textDecoration: "none", fontSize: 13.5, fontFamily: "'Hanuman', 'Inter', sans-serif",
     fontWeight: 600, marginBottom: 28, padding: "8px 16px", borderRadius: 8,
     backgroundColor: "#F4ECE0", border: "1px solid #DFD2BF",
     boxShadow: "0 2px 6px rgba(60, 35, 20, 0.04)",
   },
   heading: { fontSize: 32, fontWeight: 700, color: "#2C1810", margin: "0 0 8px", fontFamily: "'Hanuman', 'Lora', Georgia, serif" },
-  subtitle: { fontFamily: "'Lora', Georgia, serif", fontSize: 16, color: "#5C4636", margin: "0 0 36px", lineHeight: 1.6 },
+  subtitle: { fontFamily: "'Hanuman', 'Lora', Georgia, serif", fontSize: 16, color: "#5C4636", margin: "0 0 36px", lineHeight: 1.6 },
   list: { display: "flex", flexDirection: "column", gap: 16 },
   card: {
     display: "flex", gap: 18, backgroundColor: "#FDFBF7", border: "1px solid #DFD3BE",
@@ -34,11 +34,11 @@ const styles = {
   body: { flex: 1, padding: "16px 20px", display: "flex", flexDirection: "column", gap: 10, minWidth: 0 },
   titleRow: { display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" },
   character: { fontSize: 20, fontWeight: 700, color: "#2C1810", fontFamily: "'Hanuman', 'Lora', Georgia, serif", margin: 0 },
-  bookTitle: { fontSize: 14, color: "#7B3F00", fontFamily: "'Lora', Georgia, serif" },
-  meta: { fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#6E5743" },
+  bookTitle: { fontSize: 14, color: "#7B3F00", fontFamily: "'Hanuman', 'Lora', Georgia, serif" },
+  meta: { fontFamily: "'Hanuman', 'Inter', sans-serif", fontSize: 12.5, color: "#6E5743" },
   statusRow: { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: "auto" },
   badge: {
-    display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'Inter', sans-serif",
+    display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'Hanuman', 'Inter', sans-serif",
     fontSize: 12.5, fontWeight: 600, padding: "5px 12px", borderRadius: 999, borderWidth: 1, borderStyle: "solid",
   },
   badgePending: { color: "#8C6D1F", backgroundColor: "#FBF3DD", borderColor: "#E8D9A8" },
@@ -46,17 +46,17 @@ const styles = {
   badgeReturned: { color: "#9A3412", backgroundColor: "#FBF1EC", borderColor: "#E8C9BC" },
   statusKh: { fontFamily: "'Hanuman', 'Lora', Georgia, serif", fontSize: 13.5, color: "#5C4636" },
   editLink: {
-    display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'Inter', sans-serif",
+    display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'Hanuman', 'Inter', sans-serif",
     fontSize: 13.5, fontWeight: 600, color: "#6B3A19", backgroundColor: "#F4ECE0",
     border: "1px solid #DFD2BF", borderRadius: 8, padding: "7px 14px", textDecoration: "none", cursor: "pointer",
   },
   viewLink: {
-    display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'Inter', sans-serif",
+    display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'Hanuman', 'Inter', sans-serif",
     fontSize: 13.5, fontWeight: 600, color: "#6B3A19", textDecoration: "none",
   },
-  emptyState: { textAlign: "center", padding: "64px 24px", color: "#8B7355", fontFamily: "'Lora', Georgia, serif", fontSize: 16 },
+  emptyState: { textAlign: "center", padding: "64px 24px", color: "#8B7355", fontFamily: "'Hanuman', 'Lora', Georgia, serif", fontSize: 16 },
   emptyCta: {
-    marginTop: 16, display: "inline-block", fontFamily: "'Inter', sans-serif", fontSize: 13.5,
+    marginTop: 16, display: "inline-block", fontFamily: "'Hanuman', 'Inter', sans-serif", fontSize: 13.5,
     fontWeight: 600, color: "#FFFFFF", backgroundColor: "#6B3A19", textDecoration: "none", borderRadius: 8, padding: "10px 18px",
   },
 };

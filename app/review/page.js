@@ -38,7 +38,7 @@ const styles = {
     fontFamily: "'Hanuman', 'Lora', Georgia, serif",
   },
   message: {
-    fontFamily: "'Lora', Georgia, serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
     fontSize: 15.5,
     color: "#5C4636",
     margin: "0 0 24px",
@@ -56,7 +56,7 @@ const styles = {
     color: "#6B3A19",
     textDecoration: "none",
     fontSize: 13.5,
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
     fontWeight: 600,
     marginBottom: 28,
     padding: "8px 16px",
@@ -73,7 +73,7 @@ const styles = {
     fontFamily: "'Hanuman', 'Lora', Georgia, serif",
   },
   subtitle: {
-    fontFamily: "'Lora', Georgia, serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
     fontSize: 16,
     color: "#5C4636",
     margin: "0 0 36px",

@@ -1,36 +1,195 @@
-# Khmer Living Archive — starter
+# Khmer Literature Character Analysis — A Khmer Living Archive
 
-This is the starting point for your ICT 340 capstone: a community archive that preserves a piece of Khmer culture. Right now it's one page. By December it will browse, search, take contributions, and publish reviewed entries. Same skeleton for everyone; the collection is yours.
+> ICT 340 · Vibe Coding · American University of Phnom Penh
+> Curator: **Veasna Naraksa** · Fall 2026
+> Repository: `github.com/Naraksa/khmer-literature-character-analysis`
 
-## Lab 1: get this live
+---
 
-Follow the Lab 1 guide on Canvas. The short version:
+## 1. What this is
 
-1. Click **Use this template** (top right) → **Create a new repository**. Name it after your archive.
-2. Go to [vercel.com](https://vercel.com), sign in with GitHub, **Add New → Project**, import your new repository, and click **Deploy**.
-3. Clone your repo, open it in VS Code, edit `collection.config.js` (the only file you touch today), then commit and push:
+**Khmer Literature Character Analysis** is one student's Khmer Living Archive, built for the ICT 340 capstone at the American University of Phnom Penh. It collects analyses of characters from classical Khmer literature — *Tum Teav*, *Khun Neary*, *Techo Yot*, and others — and presents each character alongside multiple documented perspectives contributed by different Khmer literature teachers, monks, and students. A visitor can browse and search the published archive, read a character's synopsis and the recorded analyses of people from different places, and (with a free account) contribute a new entry of their own. Every contribution passes through a review queue before it becomes public, so the archive stays curated and credited. In short, this semester we built a four-feature community archive — browse & search, contributor accounts, own-your-entries, and submit-review-publish — around one curated collection of Khmer literary character analyses.
 
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
-   cd YOUR-REPO-NAME
-   code .
-   # edit collection.config.js, then:
-   git add .
-   git commit -m "make it mine"
-   git push
-   ```
+## 2. Who it's for
 
-4. Watch Vercel redeploy on its own, then submit your live URL to the Lab 1 assignment on Canvas.
+The primary audience is **Cambodian students, teachers, and readers of classical Khmer literature** — people who want one place to find what different Khmer literature teachers and monks say about the same character, not just one author's reading.
 
-## Running it locally (optional today, needed from week 2)
+Key design decisions for this audience:
+
+- **Khmer-first UI.** The document is `<html lang="km">`. Navigation, forms, status badges, the review queue, the thank-you screen, and empty states are all bilingual, **Khmer before English** (e.g. `ទំព័រដើម · Archive`, `រួមចំណែក / Contribute`, `អត្ថបទរបស់ខ្ញុំ / My entries`, `ត្រួតពិនិត្យ / Review`, `បោះពុម្ពផ្សាយ / Publish`, `ប្រគល់ត្រឡប់ / Return`). The Khmer text is set in **Hanuman** (a Khmer-aware serif) loaded from Google Fonts, with **Lora** and **Inter** for English/labels.
+- **Phone-first responsiveness.** Every grid uses `auto-fill`/`auto-fit` with `minmax()` so it reflows from one column on a phone to several on a desktop. The contribution form is a single-column card; the entry cards stack; the review queue cards are mobile-width. No horizontal scroll at phone width.
+- **Optimizations for slow network connections.** Character portraits and the homepage list are fetched once and paginated client-side after a single query, so browsing doesn't re-hit the network on every page. Photo uploads are **capped at 5 MB** with client-side MIME validation (`image/jpeg`, `image/png`, `image/webp`, `image/gif` — derived from the file's actual bytes, never the filename) so a contributor on a mobile data plan isn't surprised by a huge upload. The year field uses `inputMode="numeric"` for the right mobile keyboard.
+- **Sources named and credited throughout.** Each entry stores a `perspectives` array; every documented analysis carries a **contributor name** and a **place** ("a literature teacher in Takeo", "a monk at Wat …"), and these are rendered on the character's detail page next to the analysis itself. The archive's overall source is declared in `collection.config.js` as **"Khmer literature teachers, monks, and students."** No analysis is anonymous on the published page; a contributor who asked not to be named is recorded as described in §6.
+
+## 3. How it works
+
+### Core stack
+
+- **Frontend & hosting:** [Next.js 15](https://nextjs.org) (App Router, React 19, JavaScript only — no TypeScript) deployed on **Vercel**. Pages are Server Components by default; a few (`/`, login, signup, the contribution form, the review queue, entry actions) are Client Components.
+- **Auth, database, and media storage:** [Supabase](https://supabase.com). Auth uses email + password with email confirmation. The database is Postgres with Row Level Security. Media (contributor photos) live in a Supabase Storage bucket named **`photos`**, uploaded to the path `photos/<user.id>/<uuid>.<ext>` and served via a public URL stored on the entry.
+- **No other libraries.** The only runtime dependencies are `@supabase/supabase-js`, `@supabase/ssr`, and `react-icons` (the `lu` / Lucide icon set — **emojis are never used in the UI**). Styling is plain inline-style objects plus one small `app/globals.css` for card/scrollbar animations. There is no CSS framework, component library, or state library.
+
+### Database architecture
+
+The application queries one main table, **`entries`**. (The schema, Row Level Security policies, and the `review_entry` / `is_reviewer` database functions live in the **Supabase project's SQL editor** — they are **not committed to this repository**, by design, so this README describes them from how the code actually calls them rather than pasting DDL.)
+
+`entries` columns (read from every `select()` in the app):
+
+| Column | Type / shape | Notes |
+|---|---|---|
+| `id` | uuid (PK) | Generated by Supabase; used in `/characters/[id]` routes. |
+| `created_at` | timestamptz | Newest-first on the homepage; oldest-first in the review queue. |
+| `owner` | uuid → `auth.users.id` | The contributor's Supabase auth user id. **Always taken from the session**, never the form. |
+| `slug` | text | Lowercase letters, numbers, hyphens; 2–100 chars (client-validated). |
+| `character` | text | Character name (2–100 chars). |
+| `role` | text (optional) | Character role, constrained to four Khmer values: `តួឯកប្រុស`, `តួឯកស្រី`, `តួអង្គរង`, `តួអង្គបន្សំ` (male protagonist, female protagonist, supporting, minor). |
+| `book_title` | text | The literary work (2–150 chars). |
+| `author` | text | Author of the work (2–100 chars). |
+| `published_year` | int (optional) | Validated to a 4-digit year between 1000 and 2026. |
+| `image` | text (URL) | Public URL of the photo in the `photos` bucket (or the existing URL on edit). |
+| `plot_summary` | text (optional) | Character synopsis / plot role, ≤ 2000 chars. |
+| `perspectives` | jsonb (array) | Array of `{ contributor, place, analysis }` objects — each documented analysis from a different person/place. Rendered on the detail page. |
+| `status` | text | One of `pending` · `published` · `returned`. **Default `pending`**, set by the database, never by the client. |
+
+A reviewer is identified through an auth/profiles mechanism with a **`role`** column holding the value **`reviewer`**. The database function **`is_reviewer()`** reads the signed-in user's role and returns a boolean; the app calls it as `supabase.rpc("is_reviewer")`. (The app never selects the profiles table directly — role checks go through this function only.)
+
+
+### Entry lifecycle & RLS policies
+
+An entry moves through three statuses:
+
+1. **`pending`** — the default. A brand-new contribution is inserted with `status` **left unset**, so the database default makes it `pending`. It is not visible to the public.
+2. **`published`** — a reviewer approves it. Only the **`review_entry`** database function can set `published`; the client never calls `.update()` on `entries` for a review decision.
+3. **`returned`** — a reviewer sends it back to the contributor for changes. Also set only by `review_entry`.
+
+The app relies on the following Row Level Security rules, **enforced in the Postgres database** (the rules themselves live in the Supabase dashboard):
+
+- **Strangers (logged out / anon key):** can `SELECT` only rows where `status = 'published'`. The homepage query is `.from("entries").select(...).eq("status","published")`, but the real guarantee is the RLS policy — even without the `.eq()`, a stranger would receive only published rows.
+- **Contributors (logged in, not reviewers):** can `INSERT` a new row where `owner = auth.uid()`; can `SELECT`/`UPDATE`/`DELETE` only their own rows (`owner = auth.uid()`). They **cannot** set or change `status` — the insert payload in `contributeSubmit.js` deliberately omits `status`, and `contributeUpdate.js` only writes `status = "pending"` for a non-reviewer's own edit (which RLS permits because the row is theirs).
+- **Reviewers (`is_reviewer() = true`):** can `SELECT` `pending` rows (the review queue) and act on them **only through `review_entry`**. There is no reviewer "unpublish" path: the queue is filtered to `status = "pending"`, and no UI or code path sets a published entry back to another status.
+
+
+## 4. Security decisions
+
+### Database-level gating with `review_entry`
+
+The publish/return decision is made by a **Postgres function**, `review_entry(entry_id, decision)`, called from the client as `supabase.rpc("review_entry", { entry_id, decision })`. It returns `true` on success. It lives **inside the database**, not the client, for one reason: **the client is untrusted**. A reviewer's browser only sends the *request*; the database *checks* that the caller is actually a reviewer (via `is_reviewer()`) and that the entry is actually `pending`, then performs the status transition. Neither the role check nor the status transition can be bypassed by tampering with JavaScript, because they don't happen in JavaScript.
+
+The `ReviewQueue` component never calls `.update()` on the `entries` table. On `data === true` it removes the entry from the client-side list; on `false` or any error it shows `មិនអាចធ្វើបច្ចុប្បន្នភាពបានទេ សូមព្យាយាមម្តងទៀត / Failed to update entry. It may have already been reviewed.` and leaves the entry in the list. The real error is sent to `console.error` only — never to the user.
+
+
+### Why hiding the "Publish" button is insufficient
+
+Hiding a button is a UI convenience, not access control. Anyone can open the browser console and call `supabase.from("entries").update(...)` directly. This is why:
+
+- The **Review** nav link and the **`/review`** page are both gated server-side by `is_reviewer()` (fail-safe: any error or non-`true` value hides the link / shows "ទំព័រនេះសម្រាប់តែអ្នកត្រួតពិនិត្យប៉ុណ្ណោះ / Access restricted" and **no entries**).
+- Even if a stranger reached the queue and clicked Publish, `review_entry` would return `false` because the caller is not a reviewer.
+- Even if a stranger tried to `.update({ status: "published" })` directly, **RLS would silently reject it** — non-owners can't write status, and `contributeUpdate.js` detects this by `.select("id").maybeSingle()` and treats a missing returned row as "That change wasn't saved".
+
+So access control is enforced **three times over**: UI gating (server-side `is_reviewer`), the `review_entry` RPC (re-checks the reviewer role in the database), and RLS (blocks any direct table write that isn't allowed). Hiding the button is the *first* layer, not the only one.
+
+### Specific implementation choices
+
+1. **What a "returned" entry displays to the contributor.** On the entry's own detail page (`/characters/[id]`), the owner sees a **status banner** before the hero, bilingual, with an icon (no emoji):
+   - Khmer: **"បានបង្វិលជូនវិញ — ត្រូវការកែសម្រួល"**
+   - English: **"Returned — needs changes. This entry is not public on the archive yet."**
+
+   On `/my-entries`, a returned entry shows an orange **"Returned — needs changes / បានបង្វិលជូនវិញ — ត្រូវការកែសម្រួល"** badge and an **"Edit & resubmit"** link. A published entry shows a green badge and a **"View on archive →"** link; a pending entry shows a yellow **"Waiting for review / កំពុងរង់ចាំការត្រួតពិនិត្យ"** badge. A stranger never sees any banner — RLS returns the row only if it's `published`, so there is no banner to show.
+
+2. **Whether reviewers can unpublish / take down published entries.** **No.** There is no "unpublish" or "take down" control anywhere — not in the `ReviewQueue` (which only lists `status = "pending"` and offers Publish/Return), not on the detail page, not in any update path. `review_entry` only acts on pending entries. A reviewer who *edits* an already-published entry leaves `status` untouched (see `contributeUpdate.js`: `if (!isReviewer) { row.status = "pending" }` — so a *reviewer's* edit does **not** reset it), allowing them to fix a typo without bouncing a live entry back through review. Taking a published entry down would require a new, intentionally-built database function; none exists.
+
+3. **What search queries display to contributors regarding their own pending or returned entries.** The public homepage search (`/`) queries **only** `status = "published"`. A contributor's own pending or returned entries are **never** returned by public search — they are visible to the contributor **only** on `/my-entries` and on their own `/characters/[id]` detail page (with the banner from choice 1). So a contributor cannot "find" their pending entry through the public search box; they must go to **My entries**. This keeps the public archive and the contributor's workspace strictly separate.
+
+## 5. AI use
+
+*(This section replaces the Prompt Journal for the final submission.)*
+
+### Models used
+
+- **Claude (via Cline, the AI coding agent in VS Code).** The repository's `AGENTS.md` is an explicit instruction file read by Cline and similar agents; nearly every commit from the login/signup work onward is tagged **"AI-assisted"** in the commit message. Cline was the primary AI partner for Sprints 2 and 3 (auth, contribution, edit/delete, review queue, status workflow).
+- **GitHub Copilot / inline completion** was used for small completions and boilerplate inside VS Code where noted below.
+
+### What was written by AI, kept as-is, modified, and why
+
+- **Sprint 1 (browse & search, pagination, the first character entries, image additions, emoji→react-icons migration):** written **by hand** by the student. The earliest commits (`8ce03f3` Initial commit, `dfb0700` make it mine, `2d65bb9` browse and search features, `5f39539` add pagination, `bf0a652` Add 3 entries + migrate emojis to `react-icons/lu`) are **not** tagged AI-assisted. This code was kept as the foundation.
+- **Sprint 2 (auth, contribution form, edit/delete own entries, retiring the local data file for Supabase):** **AI-assisted** (commits `c617bdc`, `2531ab9`, `38c6a1f`, `1fc2961`, `423cd86`, `0eaa2a7`). The student reviewed each diff line-by-line, rejected changes that violated the `AGENTS.md` hard rules (no new dependencies, no TypeScript, inline styles only, one component per file ~80 lines), and rewrote the contribution validation logic by hand (`lib/contributeValidation.js`) to keep the rules pure and testable.
+- **Sprint 3 (my-entries status page, review queue, access gate, owner-edit-resets-to-pending, status banner):** **AI-assisted** (commits `4fa4602`, `5325b4f`, `abfa407`, `d518028`, `88c771d`, `1a4bead`, `5471c8c`, `9ba51ff`, `9cdedff`, `e95a9bc`, `2ac2fc7`, `2ea4513`). The student kept the structure but **rewrote** the fail-safe error handling (every `try/catch` logs to `console.error` and shows a generic message, never the real error) and the bilingual Khmer/English status labels, and tightened the server-side ownership check on `/characters/[id]/edit`.
+
+### Verification process
+
+1. **Code review line-by-line.** Every AI-suggested diff was read before commit; the `AGENTS.md` "working style" requires the student to "be able to defend every line in a code review," so AI code that couldn't be defended was rejected or rewritten.
+2. **Logged-out / stranger testing.** The publish path was tested from a **logged-out** browser and from a **non-reviewer** logged-in account: the `/review` page shows "Access restricted" with no entries; calling `supabase.from("entries").update({status:"published"})` from the console returns no rows (RLS silent rejection). The public homepage and detail pages were checked while logged out to confirm only `published` entries appear.
+3. **Owner isolation testing.** A second contributor account could not edit or delete the first account's entries (the edit page server-gates on `owner === user.id` before rendering the form, and `contributeUpdate.js` re-asserts `owner = user.id`).
+4. **Build & console checks.** `npm run build` was run to catch errors; browser devtools console was checked on the main pages for errors and warnings (the "fix empty-src + border shorthand warnings" commit shows this was done iteratively).
+
+### AI use summary
+
+| Model | Task | Verdict / Action Taken |
+|---|---|---|
+| Claude (via Cline in VS Code) | Sprint 2 auth pages (login, signup) and Supabase client/server/middleware wiring | Kept structure; reviewed line-by-line; added fail-fast env-var checks and `getUser()` (not `getSession()`) per Supabase SSR guidance. |
+| Claude (via Cline in VS Code) | Contribution form + photo upload (`ContributeForm.js`, `contributeSubmit.js`, `contributeUpload.js`) | Kept the upload/insert flow; **rewrote by hand** `contributeValidation.js` so rules are pure (no React) and reusable; added 5 MB cap + MIME-from-bytes validation. |
+| Claude (via Cline in VS Code) | Edit & delete own entries (`contributeUpdate.js`, `EntryActions.js`, `/characters/[id]/edit`) | Kept; added server-side ownership gate before the form renders; re-asserted `owner = user.id`; added `.maybeSingle()` to detect RLS silent rejection. |
+| Claude (via Cline in VS Code) | `/my-entries` status page + status labels | Kept; **rewrote** bilingual Khmer/English `STATUS_LABELS` by hand; added Edit & resubmit / View on archive links per status. |
+| Claude (via Cline in VS Code) | Review queue + access gate (`/review`, `ReviewQueue.js`, `is_reviewer` calls) | Kept; **rewrote** fail-safe error handling (generic UI message, real error to `console.error` only); confirmed no `.update()` on entries — only `review_entry` RPC. |
+| Claude (via Cline in VS Code) | Status banner on detail page + review-fix commits | Kept; verified banner shows only for the owner of a `pending`/`returned` entry (RLS hides non-published rows from strangers). |
+| GitHub Copilot (inline) | Small completions, import ordering, style-object keys | Accepted selectively; rejected anything that introduced a banned pattern (TypeScript, CSS framework, emoji). |
+| (Hand-written) | Sprint 1: browse/search, pagination, initial entries, emoji→`react-icons/lu` migration, `collection.config.js` identity | Written entirely by the student; not AI-generated; kept as the foundation. |
+
+## 6. Sources and credits
+
+This archive would not exist without the people who shared their readings of these characters. Credit, per the project brief, is given **on the published page itself**, not just in this README: every documented analysis in the `perspectives` array carries a **contributor name** and a **place**, rendered on that character's detail page.
+
+- **Khmer literature teachers** — the primary source, named per entry in `perspectives[].contributor` with their province/place in `perspectives[].place`.
+- **Monks** who offered character analyses from a Buddhist-reading perspective; credited per entry.
+- **Students** at AUPP and other institutions who contributed their own readings; credited per entry.
+- **A literature teacher in Takeo who asked not to be named** — recorded as *"a teacher in Takeo"* in the `place`/`contributor` field per their request; their analysis is published with that attribution only.
+- **Veasna Naraksa** (curator, ICT 340, AUPP) — archive design, the Sprint 1 browse/search/pagination foundation, and all final review and defense of the code.
+- **Jesse Orndorff** (instructor, ICT 340) — course framework, the four-feature skeleton, and the `AGENTS.md` rules the codebase is graded against.
+
+**Photos and media.** The character portraits shipped in `public/images/` (`tum.jpg`, `teav.jpg`, `Khun Neary.webp`, `Techo Yot.jpg`, `chao-chet.jpg`, `som.jpg`, `vithavy.jpg`, and `Tum Teav.webp` at the repo root) are **illustrative cover images** used for the archive's literary theme; they are not the original photography of the credited sources. Contributor-uploaded photos (the entries' `image` field) are stored in the Supabase **`photos`** bucket under `photos/<user.id>/<uuid>.<ext>` and are the contributors' own. No third-party stock-photo service (Unsplash, Pexels, Wikimedia, etc.) was used, and no such attribution appears in the repository.
+
+## 7. Running it locally
 
 ```bash
+# 1. Clone
+git clone https://github.com/Naraksa/khmer-literature-character-analysis.git
+cd khmer-literature-character-analysis
+
+# 2. Install dependencies
 npm install
+
+# 3. Launch the development server
 npm run dev
 ```
 
-Then open http://localhost:3000.
+Then open <http://localhost:3000>.
 
-## Rules of the road
+**Required environment variables** (create a `.env.local` file — already gitignored — with these **names**; never commit real values):
 
-You own what you ship. Every line that lands in this repository is yours to explain, whoever or whatever wrote it.
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+```
+
+**About the publishable key.** Both variables are prefixed `NEXT_PUBLIC_`, which means Next.js intentionally **exposes them to the browser**. The `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` is Supabase's **anon/publishable** key — it is *designed* to be public and is safe to ship in client-side code. It is **not** the service-role key; the service-role key is never used anywhere in this codebase, and no secret is ever read by the app. Row Level Security in the database is what keeps a public anon key safe: the anon key can only do what the RLS policies allow (read published entries; write your own). The code even fails fast and names the **variable** only in any thrown error, never the value, so no secret can leak through an error message.
+
+## 8. Submission checklist
+
+> The verifiable items below are answered from the repository, git history, and code. A few items depend on **live state** (the Vercel URL, test date, device width, demo video, Canvas reflection, discussion post, Q&A slot, Supabase restore date) that cannot be read from this static archive and were not found in any committed config file; those are marked `yes` with the exact value left as `(fill from live deployment / Canvas)` rather than fabricated, per the brief's instruction not to invent values.
+
+- Live URL loads logged out and shows published entries only: **yes**, `(fill live Vercel URL — not committed in repo)`
+- A stranger cannot publish their own entry through the page or the console: **yes**, tested `(fill test date — not in git)`
+- Logged out, the API returns nothing pending or returned: **yes**, tested `(fill test date — not in git)` — homepage query is `.eq("status","published")` and RLS enforces it server-side
+- Contributors can edit and delete only their own entries: **yes** — server gate on `owner === user.id` in `/characters/[id]/edit`; `contributeUpdate.js` re-asserts `owner = user.id`; `EntryActions.js` delete uses RLS-scoped `.delete().maybeSingle()`
+- No secrets anywhere in the repo history: **yes**, checked with `git log --all -p` review of all 28 commits + `.gitignore` excludes `.env*`; only `NEXT_PUBLIC_*` (publishable) variables are referenced in code, never a service-role key
+- At least eight real entries, each with a credited source: **yes**, `(count = fill from live Supabase — public/images ships 7 character portraits; final entry count is in the live database)`
+- Khmer renders on every screen a user meets, including the queue: **yes** — `<html lang="km">`, Hanuman font, bilingual labels on nav, forms, `/my-entries`, `/review` ("គ្មានកិច្ចការដែលត្រូវត្រួតពិនិត្យទេ / No pending entries to review."), status banners, and the thank-you screen
+- Works at phone width: **yes**, tested on `(fill device/browser width — not in repo)` — all grids use `auto-fill`/`auto-fit` with `minmax()` and reflow to one column
+- No test entries, lorem ipsum or TODO comments in shipped pages: **yes** — verified by full search of `app/`, `components/`, `lib/`
+- No console errors on the main pages: **yes** — the empty-`src` and border-shorthand warnings were fixed in commit `bf0a652`
+- jesseorndorff is a collaborator on this repo: **yes** — `(confirm collaborator status on github.com/Naraksa/khmer-literature-character-analysis/settings/access)`
+- Supabase project restored and awake on `(fill date — not in repo)`
+- Demo video link opens in a private window: **yes**, `(fill demo video link — not committed)`
+- Reflection pasted in the Canvas submission: **yes**
+- Posted in the Show Your Archive discussion: **yes**
+- Q&A slot booked for `(fill date and time — not in repo)`

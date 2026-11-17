@@ -5,19 +5,20 @@ const styles = {
   field: { marginBottom: 18 },
   label: {
     display: "block",
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 11,
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontSize: 12.5,
     color: "#8C715A",
-    letterSpacing: 1.2,
-    textTransform: "uppercase",
+    letterSpacing: 0.8,
     fontWeight: 700,
     margin: "0 0 6px",
+    lineHeight: 1.5,
   },
   error: {
     margin: "6px 0 0",
-    fontFamily: "'Lora', Georgia, serif",
-    fontSize: 13,
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
+    fontSize: 13.5,
     color: "#8B4513",
+    lineHeight: 1.5,
   },
 };
 

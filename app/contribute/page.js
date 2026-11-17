@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LuArrowLeft } from "react-icons/lu";
 import { createClient } from "../../lib/supabase/server.js";
 import ContributeForm from "../../components/ContributeForm.js";
 
@@ -12,49 +13,63 @@ const styles = {
   },
   card: {
     width: "100%",
-    maxWidth: 420,
+    maxWidth: 460,
     backgroundColor: "#FDFBF7",
     border: "1px solid #DFD3BE",
-    borderRadius: 10,
+    borderRadius: 12,
     padding: "40px 36px",
-    boxShadow: "0 2px 8px rgba(60, 35, 20, 0.04)",
+    boxShadow: "0 4px 14px rgba(60, 35, 20, 0.06)",
     textAlign: "center",
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 700,
     color: "#2C1810",
     margin: "0 0 14px",
     fontFamily: "'Hanuman', 'Lora', Georgia, serif",
   },
   message: {
-    fontFamily: "'Lora', Georgia, serif",
+    fontFamily: "'Hanuman', 'Lora', Georgia, serif",
     fontSize: 15.5,
     color: "#5C4636",
     margin: "0 0 24px",
-    lineHeight: 1.6,
+    lineHeight: 1.7,
   },
   link: {
     display: "inline-block",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
     fontSize: 13.5,
     fontWeight: 600,
     color: "#FFFFFF",
     backgroundColor: "#6B3A19",
     textDecoration: "none",
     borderRadius: 8,
-    padding: "10px 20px",
+    padding: "10px 22px",
+    boxShadow: "0 2px 6px rgba(107, 58, 25, 0.15)",
   },
   formWrap: {
     maxWidth: 1240,
     margin: "0 auto",
-    padding: "48px 24px 80px",
+    padding: "40px 24px 80px",
+  },
+  backLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    color: "#6B3A19",
+    textDecoration: "none",
+    fontSize: 13.5,
+    fontFamily: "'Hanuman', 'Inter', sans-serif",
+    fontWeight: 600,
+    marginBottom: 24,
+    padding: "8px 16px",
+    borderRadius: 8,
+    backgroundColor: "#F4ECE0",
+    border: "1px solid #DFD2BF",
+    boxShadow: "0 2px 6px rgba(60, 35, 20, 0.04)",
   },
 };
 
-// Server Component: decide here, on the server, whether the visitor may
-// see the form. We use getUser() (not getSession()) so the token is
-// actually validated against Supabase rather than trusted from a cookie.
 export default async function ContributePage() {
   const supabase = await createClient();
   const {
@@ -65,11 +80,13 @@ export default async function ContributePage() {
     return (
       <main style={styles.page}>
         <div style={styles.card}>
-          <h1 style={styles.title}>Log in to contribute</h1>
+          <h1 style={styles.title}>ចូលគណនីដើម្បីរួមចំណែក</h1>
           <p style={styles.message}>
-            You need an account to add entries to the archive.
+            You need an account to add entries to the archive. / លោកអ្នកត្រូវមានគណនីដើម្បីអាចបន្ថែមតួអង្គចូលក្នុងបណ្ណសារ។
           </p>
-          <Link href="/login" style={styles.link}>Log in</Link>
+          <Link href="/login" style={styles.link}>
+            ចូលគណនី / Log in
+          </Link>
         </div>
       </main>
     );
@@ -77,6 +94,9 @@ export default async function ContributePage() {
 
   return (
     <main style={styles.formWrap}>
+      <Link href="/" style={styles.backLink}>
+        <LuArrowLeft size={14} /> Return to Collection Catalog
+      </Link>
       <ContributeForm user={user} />
     </main>
   );
